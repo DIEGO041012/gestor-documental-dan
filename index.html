@@ -78,6 +78,8 @@
   .btn-danger:hover { background: var(--danger-bg); }
   .btn-edit { background: transparent; color: var(--accent); border-color: #A8C3E0; font-size: 12px; padding: 5px 9px; margin-right: 4px; min-height: 34px; }
   .btn-edit:hover { background: var(--accent-bg); }
+  .btn-warning { background: transparent; color: var(--warning); border-color: #E0C68A; font-size: 12px; padding: 5px 9px; margin-right: 4px; min-height: 34px; }
+  .btn-warning:hover { background: var(--warning-bg); }
   .btn-sm { padding: 5px 10px; font-size: 12px; min-height: 32px; }
 
   /* STATS */
@@ -302,7 +304,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div style="display:flex;align-items:center;gap:10px;min-width:0">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABdwAAASFCAYAAAC1wx7vAAAQAElEQVR4AezdC/w1V13f+9+a+T+X3C8kT0JIQkJAEG21VSJQraAFFdQqtsdebI+tovacV62tt9aXF7wgVVvAvk5rBautLVKxXkBF23oOKkWtl6pYUYsi5Q5JFAgEkjx71vmumb1m1syemT3//fz3/7/3/T/PK9/Mba3fWus9+/8kexkfMuMXAggggAACCCCAAAIIIIAAAgjMXYD1IYAAAggggMAxCLDhfgzIDIEAAggggAACYwI8QwABBBBAAAEEEEAAAQQQQGAeAmy4j71HniGAAAIIIIAAAggggAACCCCAwPwFWCECCCCAAAJHJMCG+xFBUgYBBBBAAAEEENiGADURQAABBBBAAAEEEEAAAQT2R4AN9/15V7s2U+aDAAIIIIAAAggggAACCCCAAALzF2CFCCCAAAKHEGDD/RBYNEUAAQQQQAABBBDYJQHmggACCCCAAAIIIIAAAgjslgAb7rv1PpjNXARYBwIIIIAAAggggAACCCCAAAIIzF+AFSKAAAIdATbcOyBcIoAAAggggAACCCAwBwHWgAACCCCAAAIIIIAAAscvwIb78ZszIgKnXYD1I4AAAggggAACCCCAAAIIIDB/AVaIwKkUYMP9VL52Fk2AAAECBAgQIECAwGkWYO0IIIAAAggggAACCJyGABvup6FKzwQIECBAgAABAgQIECg2AZUQIECAAAECBAgQIECg7ARSQuLYCxYCBAgQIECAAAECBBBAAAEECEwvQAABBBBAAAECWEcJyQAAEABJREFUwQEEmXpFrxICLICABJKVOoU0AABAlSURBVDeIkZDX9DFooKnkFOJgTKMhwPqUP5CAdjyD84AErgYQhpxDnaAtHRTaLj5AZTvJc0jTaG5CkMYBQb1MJZTHFrDsUtDVwtqcNhAAAoggAACCCCAAAIIIIAAAggggAAC1RQg4V6dtaW3EPQg2ZzcNb/6c9L2sq3/OuUu/kMAAQQQQAABBBBAAAEEEEAAAQQQKKcACfdyHmc51SehSpsQyD5rvsi3rFmVLxN6BygLKAugxr7pgqRHFuu41cKVvSGJU2S0kZgSl03KgKKq5C1KRQQQQQABBBBAAAEEEEAAAQQQQAABBHZlgIT7rjxvSl2wQPuG9L9zQMtGGYnrNZK+VDwyQmCzZi3ry3wDL7cn7fXQdG+z1EpN9C7GmSSY/N2eV5mKAAIIIIAAAggggAACCCCAAAIIIFAeAQ0ANvE3sBEPMOAvHDf3Z3jJPmMHkr7Es9LZmyxQoGDT9EjimT5tzcgVJqO90SSGjZ92KIGKPT8SEZjnTfBIn2LKp3PDCELTz5wSl+eOtVUKAAAQQECAwHwEGY/GcM3vGD5PgQzHYA1M7ChAoJgHXOEHXTOA5G/K1n93tPh4d8j4Ipzn5HeQL+dqU29TE0VAmSCCAAAIIIIAAAggggAACCCCAAAIIIICAAgKFyEBBIAiK+RGvpMHShNChAWjNBg9YXOX/ftFa1DtIeaAAAqoAiKAO6oAvKgAAAABJRU5ErkJggg==" alt="Dan" style="width:36px;height:auto;display:block;flex-shrink:0" onerror="this.style.display='none'">
+        <div class="brand-icon" style="margin-bottom:0"><i class="ti ti-archive"></i></div>
         <div class="sidebar-brand-text">
           <div class="brand-name">Gestor Documental</div>
           <div class="brand-sub">Archivo Empresarial</div>
@@ -521,6 +523,7 @@ let importRows = [];
 let currentModal = null;
 let editingId = null;
 let uploadedFotoUrl = null;
+let bajaRecordData = null;
 
 // ── SIDEBAR (mobile/tablet off-canvas) ──────────────────────────────────────
 function openSidebar() {
@@ -640,21 +643,43 @@ async function loadGestion() {
     wrap.innerHTML = `<div class="empty"><i class="ti ti-users"></i><p>Sin registros.</p></div>`;
     return;
   }
-  const coll = gestionTab === 'activos' ? 'gestion_activos_tbl' : 'gestion_inactivos_tbl';
   const thead = gestionTab === 'activos'
     ? `<tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Año</th><th>Mes</th><th>Día</th><th>Acciones</th></tr>`
-    : `<tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Fecha inicio</th><th>Fecha final</th><th>Acciones</th></tr>`;
+    : `<tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Fecha inicio</th><th>Fecha final</th><th>Ubicación</th><th>Acciones</th></tr>`;
   const tbody = data.map((r,i) => {
     const foto = r.foto_url ? `<img src="${r.foto_url}" class="foto-preview" style="width:30px;height:30px">` : `<div class="avatar">${r.nombre.charAt(0)}</div>`;
     const dbTable = gestionTab === 'activos' ? 'personal_activo' : 'personal_inactivo';
     const editType = gestionTab === 'activos' ? 'gestion_activos' : 'gestion_inactivos';
     if(gestionTab === 'activos') {
-      return `<tr><td>${i+1}</td><td>${foto}</td><td>${r.nombre}</td><td>${r.cedula}</td><td>${r.año}</td><td>${MESES[r.mes-1]||r.mes}</td><td>${r.dia}</td><td><button class="btn btn-edit" onclick="editRecord('${editType}','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('${dbTable}','${r.id}','gestion')">Eliminar</button></td></tr>`;
+      return `<tr><td>${i+1}</td><td>${foto}</td><td>${r.nombre}</td><td>${r.cedula}</td><td>${r.año}</td><td>${MESES[r.mes-1]||r.mes}</td><td>${r.dia}</td><td><button class="btn btn-warning" onclick="openBajaModal('${r.id}')" title="Mover a Personal inactivo"><i class="ti ti-user-x"></i> Dar de baja</button><button class="btn btn-edit" onclick="editRecord('${editType}','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('${dbTable}','${r.id}','gestion')">Eliminar</button></td></tr>`;
     } else {
-      return `<tr><td>${i+1}</td><td>${foto}</td><td>${r.nombre}</td><td>${r.cedula}</td><td>${r.fecha_inicio}</td><td>${r.fecha_final}</td><td><button class="btn btn-edit" onclick="editRecord('${editType}','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('${dbTable}','${r.id}','gestion')">Eliminar</button></td></tr>`;
+      return `<tr><td>${i+1}</td><td>${foto}</td><td>${r.nombre}</td><td>${r.cedula}</td><td>${r.fecha_inicio}</td><td>${r.fecha_final||'-'}</td><td>${r.ubicacion||'-'}</td><td><button class="btn btn-edit" onclick="editRecord('${editType}','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('${dbTable}','${r.id}','gestion')">Eliminar</button></td></tr>`;
     }
   }).join('');
   wrap.innerHTML = `<div class="table-wrap"><table><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
+}
+
+// ── DAR DE BAJA (mover activo -> inactivo) ──────────────────────────────────
+async function openBajaModal(id) {
+  const { data, error } = await sb.from('personal_activo').select('*').eq('id', id).single();
+  if(error || !data) { toast('Error al cargar el registro', 'error'); return; }
+  currentModal = 'baja_activo';
+  editingId = id;
+  bajaRecordData = data;
+  const fechaIngreso = `${data.año}-${String(data.mes).padStart(2,'0')}-${String(data.dia).padStart(2,'0')}`;
+  const hoy = new Date().toISOString().slice(0,10);
+  document.getElementById('modal-title').textContent = `Dar de baja: ${data.nombre}`;
+  document.getElementById('modal-body').innerHTML = `<div class="form-grid">
+    <div class="form-field full">
+      <p style="font-size:13px;color:var(--text-2);line-height:1.5">Este registro se moverá de <strong>Personal activo</strong> a <strong>Personal inactivo</strong>. Puedes dejar la ubicación en blanco y agregarla después manualmente editando el registro inactivo.</p>
+    </div>
+    <div class="form-field"><label>Cédula</label><input value="${data.cedula}" disabled></div>
+    <div class="form-field"><label>Fecha de ingreso</label><input value="${fechaIngreso}" disabled></div>
+    <div class="form-field full"><label>Fecha de salida (renuncia)</label><input type="date" id="f-baja-fecha_final" value="${hoy}"></div>
+    <div class="form-field full"><label>Ubicación (caja) — opcional</label><input id="f-baja-ubicacion" placeholder="Ej: G-01, la puedes agregar luego"></div>
+  </div>`;
+  document.getElementById('btn-save').innerHTML = '<i class="ti ti-check"></i> Confirmar baja';
+  document.getElementById('modal-overlay').classList.add('open');
 }
 
 // ── PRESIDENCIA ────────────────────────────────────────────────────────────
@@ -772,6 +797,7 @@ function openModal(type, record) {
   currentModal = type;
   editingId = record ? record.id : null;
   uploadedFotoUrl = record ? (record.foto_url || null) : null;
+  document.getElementById('btn-save').innerHTML = '<i class="ti ti-check"></i> Guardar';
   const titles = {
     general: record ? 'Editar caja' : 'Nueva caja — Archivo general',
     gestion: record ? 'Editar registro' : 'Nuevo registro — Gestión humana',
@@ -829,6 +855,7 @@ function openModal(type, record) {
         <div class="form-field full"><label>Cédula</label><input id="f-cedula" value="${r.cedula||''}" placeholder="Número de documento"></div>
         <div class="form-field"><label>Fecha de inicio</label><input type="date" id="f-fecha_inicio" value="${r.fecha_inicio||''}"></div>
         <div class="form-field"><label>Fecha final</label><input type="date" id="f-fecha_final" value="${r.fecha_final||''}"></div>
+        <div class="form-field full"><label>Ubicación (caja)</label><input id="f-ubicacion" value="${r.ubicacion||''}" placeholder="Ej: G-01"></div>
         ${fotoBlock('inactivo')}
       </div>`;
       currentModal = 'gestion_inactivos';
@@ -839,6 +866,7 @@ function openModal(type, record) {
       <div class="form-field full"><label>Cédula</label><input id="f-cedula" value="${r.cedula||''}" placeholder="Número de documento"></div>
       <div class="form-field"><label>Fecha de inicio</label><input type="date" id="f-fecha_inicio" value="${r.fecha_inicio||''}"></div>
       <div class="form-field"><label>Fecha final</label><input type="date" id="f-fecha_final" value="${r.fecha_final||''}"></div>
+      <div class="form-field full"><label>Ubicación (caja)</label><input id="f-ubicacion" value="${r.ubicacion||''}" placeholder="Ej: G-01"></div>
       ${fotoBlock('inactivo2')}
     </div>`;
   } else if(type === 'presidencia') {
@@ -881,6 +909,35 @@ function val(id) { const el = document.getElementById(id); return el ? el.value.
 
 async function saveRecord() {
   const type = currentModal;
+
+  if(type === 'baja_activo') {
+    const fechaFinal = val('f-baja-fecha_final');
+    if(!fechaFinal) { toast('Ingresa la fecha de salida', 'error'); return; }
+    const r = bajaRecordData;
+    if(!r) { toast('No se encontró el registro de origen', 'error'); return; }
+    const fechaInicio = `${r.año}-${String(r.mes).padStart(2,'0')}-${String(r.dia).padStart(2,'0')}`;
+    const nuevoInactivo = {
+      nombre: r.nombre,
+      cedula: r.cedula,
+      fecha_inicio: fechaInicio,
+      fecha_final: fechaFinal,
+      ubicacion: val('f-baja-ubicacion') || null,
+      foto_url: r.foto_url || null
+    };
+    const { error: insErr } = await sb.from('personal_inactivo').insert([nuevoInactivo]);
+    if(insErr) { toast('Error al mover el registro: ' + insErr.message, 'error'); return; }
+    const { error: delErr } = await sb.from('personal_activo').delete().eq('id', r.id);
+    if(delErr) {
+      toast('Se creó en inactivos pero no se pudo quitar de activos: ' + delErr.message, 'error');
+      closeModal(); loadGestion(); loadDashboard(); return;
+    }
+    toast(`${r.nombre} se movió a Personal inactivo`);
+    closeModal();
+    loadGestion();
+    loadDashboard();
+    return;
+  }
+
   let data = {};
   let table = '';
 
@@ -893,8 +950,8 @@ async function saveRecord() {
     data = { nombre: val('f-nombre'), cedula: val('f-cedula'), año: parseInt(val('f-año')), mes: parseInt(val('f-mes')), dia: parseInt(val('f-dia')), foto_url: uploadedFotoUrl };
     table = 'personal_activo';
   } else if(type === 'gestion_inactivos') {
-    if(!val('f-nombre') || !val('f-cedula') || !val('f-fecha_inicio') || !val('f-fecha_final')) { toast('Completa todos los campos', 'error'); return; }
-    data = { nombre: val('f-nombre'), cedula: val('f-cedula'), fecha_inicio: val('f-fecha_inicio'), fecha_final: val('f-fecha_final'), foto_url: uploadedFotoUrl };
+    if(!val('f-nombre') || !val('f-cedula') || !val('f-fecha_inicio')) { toast('Completa nombre, cédula y fecha de inicio', 'error'); return; }
+    data = { nombre: val('f-nombre'), cedula: val('f-cedula'), fecha_inicio: val('f-fecha_inicio'), fecha_final: val('f-fecha_final')||null, ubicacion: val('f-ubicacion'), foto_url: uploadedFotoUrl };
     table = 'personal_inactivo';
   } else if(type === 'presidencia') {
     if(!val('f-nombre')) { toast('Completa el nombre del documento', 'error'); return; }
@@ -942,7 +999,7 @@ async function deleteRecord(table, id, section) {
   else if(section==='prestamos') { loadPrestamos(); loadDashboard(); }
 }
 
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingId=null; uploadedFotoUrl=null; }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingId=null; uploadedFotoUrl=null; bajaRecordData=null; document.getElementById('btn-save').innerHTML = '<i class="ti ti-check"></i> Guardar'; }
 function closeModalOutside(e) { if(e.target===document.getElementById('modal-overlay')) closeModal(); }
 
 // ── IMPORTAR ────────────────────────────────────────────────────────────────
@@ -971,7 +1028,7 @@ function setImportTab(tab) {
 function setImportHint() {
   document.getElementById('imp-hint').innerHTML = importTab==='activos'
     ? '<strong>Columnas requeridas:</strong> Nombre completo, Cédula, Año, Mes, Día'
-    : '<strong>Columnas requeridas:</strong> Nombre completo, Cédula, Fecha inicio, Fecha final';
+    : '<strong>Columnas requeridas:</strong> Nombre completo, Cédula, Fecha inicio, Fecha final (opcional), Ubicación (opcional)';
 }
 
 function handleFileImport(e) {
@@ -979,28 +1036,149 @@ function handleFileImport(e) {
   const reader = new FileReader();
   reader.onload = function(ev) {
     try {
-      const wb = XLSX.read(ev.target.result, {type:'array'});
+      const wb = XLSX.read(ev.target.result, {type:'array', cellDates:true});
       const ws = wb.Sheets[wb.SheetNames[0]];
-      importRows = XLSX.utils.sheet_to_json(ws);
+      importRows = XLSX.utils.sheet_to_json(ws).map(normalizeImportRow);
       showImportPreview(importRows);
     } catch(err) { toast('Error al leer el archivo', 'error'); }
   };
   reader.readAsArrayBuffer(file);
 }
 
+function normalizeImportRow(row) {
+  const normalized = {};
+  const mapKey = key => String(key||'')
+    .normalize('NFC')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+    .replace(/á/g, 'a')
+    .replace(/é/g, 'e')
+    .replace(/í/g, 'i')
+    .replace(/ó/g, 'o')
+    .replace(/ú/g, 'u')
+    .replace(/ü/g, 'u')
+    .replace(/ñ/g, 'n');
+
+  const canonical = {
+    'nombre completo': 'Nombre completo',
+    'nombre': 'Nombre completo',
+    'cedula': 'Cédula',
+    'cédula': 'Cédula',
+    'fecha inicio': 'Fecha inicio',
+    'fecha de inicio': 'Fecha inicio',
+    'fecha_inicio': 'Fecha inicio',
+    'fecha_inicio': 'Fecha inicio',
+    'fecha_final': 'Fecha final',
+    'fecha final': 'Fecha final',
+    'fecha_final': 'Fecha final',
+    'ubicacion': 'Ubicación',
+    'ubicación': 'Ubicación',
+    'año': 'Año',
+    'ano': 'Año',
+    'mes': 'Mes',
+    'dia': 'Día',
+    'dí­a': 'Día',
+    'inicio': 'Fecha inicio',
+    'inicio fecha': 'Fecha inicio',
+    'fecha inicio': 'Fecha inicio',
+    'fecha inicial': 'Fecha inicio'
+  };
+
+  Object.entries(row).forEach(([key, value]) => {
+    const nk = mapKey(key);
+    const canon = canonical[nk] || key;
+    normalized[canon] = value;
+  });
+  return normalized;
+}
+
 function showImportPreview(rows) {
   const prev = document.getElementById('import-preview');
   if(!rows.length) { prev.innerHTML='<p style="color:var(--danger);font-size:12px">El archivo está vacío.</p>'; prev.style.display='block'; return; }
   const valid = rows.filter(r => r['Nombre completo'] && r['Cédula']);
+  const headers = Object.keys(rows[0]);
+  const required = importTab==='activos'
+    ? ['Nombre completo','Cédula','Año','Mes','Día']
+    : ['Nombre completo','Cédula','Fecha inicio'];
+  const missing = required.filter(f => !headers.includes(f));
+  let invalidInfo = '';
+  let invalidStartRows = [];
+  if (importTab==='inactivos' && !missing.length) {
+    invalidStartRows = rows.map((r,i) => ({value: r['Fecha inicio'], index: i+1}))
+      .filter(x => !parseExcelDate(x.value));
+    if (invalidStartRows.length) {
+      invalidInfo = `<p style="margin:0.5rem 0 0;color:var(--danger)">Fecha inicio inválida en filas: ${invalidStartRows.map(x => x.index).join(', ')}</p>`;
+    }
+  }
   prev.innerHTML = `<div style="padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);font-size:12px">
     <strong>${rows.length} filas encontradas · ${valid.length} válidas</strong>
+    ${missing.length ? `<p style="margin:0.5rem 0 0;color:var(--danger)">Faltan columnas requeridas: ${missing.join(', ')}</p>` : ''}
+    ${invalidInfo}
     <div style="margin-top:8px;overflow-x:auto"><table style="font-size:11px;border-collapse:collapse">
-      <tr>${Object.keys(rows[0]).map(k=>`<th style="padding:4px 8px;background:var(--surface2);border:1px solid var(--border)">${k}</th>`).join('')}</tr>
-      ${rows.slice(0,3).map(r=>`<tr>${Object.values(r).map(v=>`<td style="padding:4px 8px;border:1px solid var(--border)">${v}</td>`).join('')}</tr>`).join('')}
+      <tr>${headers.map(k=>`<th style="padding:4px 8px;background:var(--surface2);border:1px solid var(--border)">${k}</th>`).join('')}</tr>
+      ${rows.slice(0,3).map(r=>`<tr>${headers.map(h=>`<td style="padding:4px 8px;border:1px solid var(--border)">${r[h] ?? ''}</td>`).join('')}</tr>`).join('')}
     </table></div>
   </div>`;
   prev.style.display='block';
-  document.getElementById('btn-import-confirm').style.display = valid.length>0 ? 'inline-flex' : 'none';
+  document.getElementById('btn-import-confirm').style.display = (valid.length>0 && missing.length===0 && invalidStartRows.length===0) ? 'inline-flex' : 'none';
+}
+
+function parseExcelDate(v) {
+  if (v === undefined || v === null || v === '') return null;
+  if (v instanceof Date) {
+    if (isNaN(v.getTime())) return null;
+    const yyyy = v.getFullYear();
+    const mm = String(v.getMonth()+1).padStart(2,'0');
+    const dd = String(v.getDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  if (typeof v === 'number') {
+    const parsed = XLSX.SSF.parse_date_code(v);
+    if (parsed) {
+      const mm = String(parsed.m).padStart(2,'0');
+      const dd = String(parsed.d).padStart(2,'0');
+      return `${parsed.y}-${mm}-${dd}`;
+    }
+    return null;
+  }
+  let s = String(v).trim();
+  if (!s) return null;
+  // If the string contains time, remove it
+  if (s.includes(' ')) s = s.split(' ')[0].trim();
+  // Normalize common separators
+  s = s.replace(/\./g, '/').replace(/-/g, '/');
+  // Try dd/mm/yyyy or dd/mm/yy
+  let dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (dmy) {
+    const [, d, m, y] = dmy;
+    return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);
+  if (dmy) {
+    const [, d, m, y2] = dmy;
+    const year = Number(y2) < 70 ? `20${y2}` : `19${y2}`;
+    return `${year}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  // Try ISO format yyyy/mm/dd or yyyy-mm-dd
+  const ymd = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if (ymd) {
+    const [, y, m, d] = ymd;
+    return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  const sISO = s.replace(/\//g, '-');
+  const date = new Date(sISO);
+  if (!isNaN(date.getTime())) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth()+1).padStart(2,'0');
+    const dd = String(date.getDate()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return null;
+}
+
+function getField(row, ...keys) {
+  return keys.map(k => row[k]).find(v => v !== undefined && v !== null);
 }
 
 async function confirmImport() {
@@ -1009,11 +1187,23 @@ async function confirmImport() {
     const nombre = String(r['Nombre completo']).trim();
     const cedula = String(r['Cédula']||'').trim();
     if(importTab==='activos') {
-      return { nombre, cedula, año: parseInt(r['Año'])||new Date().getFullYear(), mes: Math.min(Math.max(parseInt(r['Mes'])||1,1),12), dia: parseInt(r['Día']||r['Dia'])||1 };
+      return { nombre, cedula, año: parseInt(getField(r, 'Año','ano'))||new Date().getFullYear(), mes: Math.min(Math.max(parseInt(getField(r, 'Mes','mes'))||1,1),12), dia: parseInt(getField(r, 'Día','Dia','dia'))||1 };
     } else {
-      return { nombre, cedula, fecha_inicio: String(r['Fecha inicio']||'').substring(0,10), fecha_final: String(r['Fecha final']||'').substring(0,10) };
+      return {
+        nombre,
+        cedula,
+        fecha_inicio: parseExcelDate(getField(r, 'Fecha inicio','Fecha de inicio','fecha_inicio','Inicio','Inicio fecha')),
+        fecha_final: parseExcelDate(getField(r, 'Fecha final','Fecha de final','fecha_final')),
+        ubicacion: String(getField(r, 'Ubicación','Ubicacion','ubicacion')) .trim() || null
+      };
     }
   });
+  const invalidStart = records.map((r,i) => ({r,i})).filter(x => !x.r.fecha_inicio);
+  if(invalidStart.length > 0) {
+    const rowIndexes = invalidStart.map(x => x.i + 1).join(', ');
+    toast(`${invalidStart.length} registro(s) sin fecha de inicio válida (filas: ${rowIndexes}), revisa el archivo`, 'error');
+    return;
+  }
   const { error } = await sb.from(table).insert(records);
   if(error) { toast('Error al importar: ' + error.message, 'error'); return; }
   toast(`${records.length} registros importados`);
@@ -1028,7 +1218,7 @@ function downloadTemplate() {
     XLSX.utils.book_append_sheet(wb, ws, 'Personal Activo');
     XLSX.writeFile(wb, 'plantilla_personal_activo.xlsx');
   } else {
-    const ws = XLSX.utils.aoa_to_sheet([['Nombre completo','Cédula','Fecha inicio','Fecha final'],['Apellido Nombre Ejemplo','12345678','2020-01-15','2024-06-30']]);
+    const ws = XLSX.utils.aoa_to_sheet([['Nombre completo','Cédula','Fecha inicio','Fecha final','Ubicación'],['Apellido Nombre Ejemplo','12345678','2020-01-15','2024-06-30','G-01']]);
     XLSX.utils.book_append_sheet(wb, ws, 'Personal Inactivo');
     XLSX.writeFile(wb, 'plantilla_personal_inactivo.xlsx');
   }
@@ -1047,7 +1237,7 @@ async function exportExcel(type) {
     const { data: da } = await sb.from('personal_activo').select('*').order('nombre');
     const { data: di } = await sb.from('personal_inactivo').select('*').order('nombre');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet((da||[]).map((r,i)=>({'#':i+1,'Nombre':r.nombre,'Cédula':r.cedula,'Año':r.año,'Mes':MESES[r.mes-1]||r.mes,'Día':r.dia}))), 'Personal Activo');
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet((di||[]).map((r,i)=>({'#':i+1,'Nombre':r.nombre,'Cédula':r.cedula,'Fecha inicio':r.fecha_inicio,'Fecha final':r.fecha_final}))), 'Personal Inactivo');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet((di||[]).map((r,i)=>({'#':i+1,'Nombre':r.nombre,'Cédula':r.cedula,'Fecha inicio':r.fecha_inicio,'Fecha final':r.fecha_final,'Ubicación':r.ubicacion}))), 'Personal Inactivo');
     XLSX.writeFile(wb, 'inventario_gestion_humana.xlsx');
   } else if(type==='presidencia') {
     const { data } = await sb.from('presidencia').select('*').order('año');
@@ -1080,7 +1270,7 @@ async function exportReporteCompleto() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumen), 'Resumen');
   if(g.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(g.data.map((r,i)=>({'#':i+1,'Año':r.año,'Mes':MESES[r.mes-1]||r.mes,'Área':r.area,'Contenido':r.contenido,'Estado':r.estado}))), 'Archivo General');
   if(a.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(a.data.map((r,i)=>({'#':i+1,'Nombre':r.nombre,'Cédula':r.cedula,'Año':r.año,'Mes':MESES[r.mes-1]||r.mes,'Día':r.dia}))), 'Personal Activo');
-  if(i.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(i.data.map((r,i)=>({'#':i+1,'Nombre':r.nombre,'Cédula':r.cedula,'Inicio':r.fecha_inicio,'Final':r.fecha_final}))), 'Personal Inactivo');
+  if(i.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(i.data.map((r,i)=>({'#':i+1,'Nombre':r.nombre,'Cédula':r.cedula,'Inicio':r.fecha_inicio,'Final':r.fecha_final,'Ubicación':r.ubicacion}))), 'Personal Inactivo');
   if(p.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(p.data.map((r,i)=>({'#':i+1,'Año':r.año,'Nombre':r.nombre}))), 'Presidencia');
   if(pr.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pr.data.map((r,i)=>({'#':i+1,'Archivo':r.archivo,'Documento':r.documento,'Solicitante':r.solicitante,'Salida':r.fecha_salida,'Devolución':r.fecha_devolucion,'Estado':r.estado}))), 'Préstamos');
   XLSX.writeFile(wb, 'reporte_completo_archivo.xlsx');
