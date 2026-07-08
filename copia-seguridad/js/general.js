@@ -19,11 +19,12 @@ async function loadGeneral() {
   </tr>`).join('');
 }
 
-async function populateYearFilter() {
-  const { data } = await sb.from('archivo_general').select('año').order('año', {ascending:false});
+async function populateYearFilter(type) {
+  const table = type === 'general' ? 'archivo_general' : 'presidencia';
+  const { data } = await sb.from(table).select('año').order('año', {ascending:false});
   if(!data) return;
   const years = [...new Set(data.map(r=>r.año))];
-  const sel = document.getElementById('filter-general-year');
+  const sel = document.getElementById(`filter-${type}-year`);
   const cur = sel.value;
   sel.innerHTML = '<option value="">Todos los años</option>' + years.map(y=>`<option value="${y}" ${y==cur?'selected':''}>${y}</option>`).join('');
 }

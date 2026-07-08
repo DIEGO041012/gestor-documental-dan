@@ -20,9 +20,9 @@ function showSection(s) {
   closeSidebar();
   window.scrollTo({top:0, behavior:'smooth'});
   if(s==='dashboard') loadDashboard();
-  else if(s==='general') { loadGeneral(); populateYearFilter(); }
+  else if(s==='general') { loadGeneral(); populateYearFilter('general'); }
   else if(s==='gestion') loadGestion();
-  else if(s==='presidencia') { loadPresidencia(); populateSeccionFilter(); }
+  else if(s==='presidencia') { loadPresidencia(); populateYearFilter('presidencia'); }
   else if(s==='prestamos') loadPrestamos();
   else if(s==='reportes') loadReportes();
 }

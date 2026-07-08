@@ -77,13 +77,8 @@ function openModal(type, record) {
     </div>`;
   } else if(type === 'presidencia') {
     body = `<div class="form-grid">
-      <div class="form-field"><label>Estante</label><input id="f-estante" value="${r.estante||''}" placeholder="Ej: 1"></div>
-      <div class="form-field"><label>Sección</label><input id="f-seccion" value="${r.seccion||''}" placeholder="Ej: A" maxlength="3" style="text-transform:uppercase"></div>
-      <div class="form-field"><label>Módulo</label><input id="f-modulo" value="${r.modulo||''}" placeholder="Ej: 001"></div>
-      <div class="form-field"><label>Tipo de documento</label><input id="f-tipo" value="${r.tipo||''}" placeholder="Ej: Contrato, Carpeta, Acta..."></div>
-      <div class="form-field full"><label>Resumen (tema)</label><input id="f-resumen" value="${r.resumen||''}" placeholder="Ej: Junta Directiva"></div>
-      <div class="form-field full"><label>Fecha</label><input id="f-fecha" value="${r.fecha||''}" placeholder="Ej: 2021-05-14, 2020, o un rango como 2018-2021"></div>
-      <div class="form-field full"><label>Contenido</label><textarea id="f-contenido">${r.contenido||''}</textarea></div>
+      <div class="form-field"><label>Año del documento</label><select id="f-año">${yearOpts}</select></div>
+      <div class="form-field full"><label>Nombre del documento</label><input id="f-nombre" value="${r.nombre||''}" placeholder="Descripción del documento"></div>
     </div>`;
   } else if(type === 'prestamo') {
     body = `<div class="form-grid">
@@ -164,8 +159,8 @@ async function saveRecord() {
     data = { nombre: val('f-nombre'), cedula: val('f-cedula'), fecha_inicio: val('f-fecha_inicio'), fecha_final: val('f-fecha_final')||null, ubicacion: val('f-ubicacion'), foto_url: uploadedFotoUrl };
     table = 'personal_inactivo';
   } else if(type === 'presidencia') {
-    if(!val('f-estante') || !val('f-seccion') || !val('f-modulo') || !val('f-resumen')) { toast('Completa estante, sección, módulo y resumen', 'error'); return; }
-    data = { estante: val('f-estante'), seccion: val('f-seccion').toUpperCase(), modulo: val('f-modulo'), resumen: val('f-resumen'), tipo: val('f-tipo')||null, fecha: val('f-fecha')||null, contenido: val('f-contenido')||null };
+    if(!val('f-nombre')) { toast('Completa el nombre del documento', 'error'); return; }
+    data = { año: parseInt(val('f-año')), nombre: val('f-nombre') };
     table = 'presidencia';
   } else if(type === 'prestamo') {
     if(!val('f-documento') || !val('f-solicitante') || !val('f-fecha_devolucion')) { toast('Completa los campos obligatorios', 'error'); return; }

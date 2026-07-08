@@ -128,21 +128,20 @@
     <div id="section-presidencia" class="section">
       <div class="page-header">
         <h1>Documentación de presidencia</h1>
-        <p>Estante, sección y módulo del archivo físico de presidencia</p>
+        <p>Documentos por año</p>
         <div class="header-actions">
           <button class="btn btn-secondary" onclick="exportExcel('presidencia')"><i class="ti ti-download"></i> Exportar Excel</button>
-          <button class="btn btn-success" onclick="openImportPresidenciaModal()"><i class="ti ti-upload"></i> Importar Excel</button>
           <button class="btn btn-primary" onclick="openModal('presidencia')"><i class="ti ti-plus"></i> Agregar documento</button>
         </div>
       </div>
       <div class="card">
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-presidencia" placeholder="Buscar por tema, tipo, módulo o contenido..." oninput="loadPresidencia()"></div>
-          <select class="filter" id="filter-presidencia-seccion" onchange="loadPresidencia()"><option value="">Todas las secciones</option></select>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-presidencia" placeholder="Buscar por nombre o año..." oninput="loadPresidencia()"></div>
+          <select class="filter" id="filter-presidencia-year" onchange="loadPresidencia()"><option value="">Todos los años</option></select>
         </div>
         <div class="table-wrap">
-          <table><thead><tr><th>#</th><th>Estante</th><th>Sección</th><th>Módulo</th><th>Resumen</th><th>Tipo</th><th>Fecha</th><th>Contenido</th><th>Acciones</th></tr></thead>
-          <tbody id="table-presidencia"><tr><td colspan="9"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
+          <table><thead><tr><th>#</th><th>Año</th><th>Nombre del documento</th><th>Acciones</th></tr></thead>
+          <tbody id="table-presidencia"><tr><td colspan="4"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
         </div>
       </div>
     </div>
@@ -222,32 +221,6 @@
   </div>
 </div>
 
-<!-- MODAL IMPORTAR — PRESIDENCIA -->
-<div class="overlay" id="import-presidencia-overlay" onclick="closeImportPresidenciaOutside(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Importar desde Excel — Presidencia</h3>
-      <button class="modal-close" onclick="closeImportPresidencia()"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="modal-body">
-      <div id="imp-pres-hint" style="font-size:12px;color:var(--text-2);margin-bottom:0.75rem;padding:8px 10px;background:var(--accent-bg);border-radius:var(--radius)">
-        <strong>Columnas esperadas:</strong> Estante, Sección, Módulo, Resumen, Tipo (opcional), Fecha (opcional), Contenido (opcional)
-      </div>
-      <div class="import-zone" onclick="document.getElementById('file-input-presidencia').click()">
-        <i class="ti ti-upload"></i>
-        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Selecciona un archivo Excel</div>
-        <span>Formatos soportados: .xlsx, .xls</span>
-      </div>
-      <input type="file" id="file-input-presidencia" accept=".xlsx,.xls" style="display:none" onchange="handleFileImportPresidencia(event)">
-      <div id="import-preview-presidencia" style="display:none;margin-top:1rem"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeImportPresidencia()">Cancelar</button>
-      <button class="btn btn-primary" id="btn-import-presidencia-confirm" style="display:none" onclick="confirmImportPresidencia()"><i class="ti ti-check"></i> Importar registros</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
 
 <!-- ═══ SCRIPTS: el orden importa (config y utils van primero) ═══ -->
@@ -262,7 +235,6 @@
 <script src="js/reportes.js"></script>
 <script src="js/modal.js"></script>
 <script src="js/importar.js"></script>
-<script src="js/importar_presidencia.js"></script>
 <script src="js/exportar.js"></script>
 <script src="js/init.js"></script>
 </body>

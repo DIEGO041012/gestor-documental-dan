@@ -10,7 +10,7 @@ async function loadReportes() {
   ]);
   const { data: areaData } = await sb.from('archivo_general').select('area');
   const { data: yearData } = await sb.from('archivo_general').select('año');
-  const { data: presResumenData } = await sb.from('presidencia').select('resumen');
+  const { data: presYearData } = await sb.from('presidencia').select('año');
 
   const areaCount = {};
   (areaData||[]).forEach(r => { areaCount[r.area] = (areaCount[r.area]||0)+1; });
@@ -22,10 +22,10 @@ async function loadReportes() {
   const topYears = Object.entries(yearCount).sort((a,b)=>b[0]-a[0]).slice(0,8);
   const maxY = topYears[0]?topYears[0][1]:1;
 
-  const presResumenCount = {};
-  (presResumenData||[]).forEach(r => { const k = r.resumen||'(sin tema)'; presResumenCount[k] = (presResumenCount[k]||0)+1; });
-  const topPresResumen = Object.entries(presResumenCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const maxPY = topPresResumen[0]?topPresResumen[0][1]:1;
+  const presYearCount = {};
+  (presYearData||[]).forEach(r => { presYearCount[r.año] = (presYearCount[r.año]||0)+1; });
+  const topPresYears = Object.entries(presYearCount).sort((a,b)=>b[0]-a[0]).slice(0,8);
+  const maxPY = topPresYears[0]?topPresYears[0][1]:1;
 
   const total = (g.count||0)+(a.count||0)+(i.count||0)+(p.count||0);
 
@@ -44,9 +44,9 @@ async function loadReportes() {
       <div class="report-title"><i class="ti ti-calendar" style="color:var(--accent)"></i> Cajas por año — Archivo general</div>
       ${topYears.map(([yr,cnt])=>`<div class="bar-row"><div class="bar-label">${yr}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxY*100)}%"></div></div><div class="bar-val">${cnt}</div></div>`).join('')}
     </div>`:''}
-    ${topPresResumen.length>0?`<div class="report-card">
-      <div class="report-title"><i class="ti ti-building" style="color:var(--accent)"></i> Documentos por tema — Presidencia</div>
-      ${topPresResumen.map(([tema,cnt])=>`<div class="bar-row"><div class="bar-label">${tema}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxPY*100)}%"></div></div><div class="bar-val">${cnt}</div></div>`).join('')}
+    ${topPresYears.length>0?`<div class="report-card">
+      <div class="report-title"><i class="ti ti-building" style="color:var(--accent)"></i> Documentos por año — Presidencia</div>
+      ${topPresYears.map(([yr,cnt])=>`<div class="bar-row"><div class="bar-label">${yr}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxPY*100)}%"></div></div><div class="bar-val">${cnt}</div></div>`).join('')}
     </div>`:''}
     <div class="report-card">
       <div class="report-title"><i class="ti ti-chart-pie" style="color:var(--accent)"></i> Distribución del archivo</div>
