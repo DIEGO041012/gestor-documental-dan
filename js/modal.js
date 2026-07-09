@@ -40,6 +40,8 @@ function openModal(type, record) {
   if(type === 'general') {
     body = `<div class="form-grid">
       <div class="form-field"><label>Año(s)</label><input id="f-año" value="${r.año||''}" placeholder="Ej: 2020 o 2018-2022"></div>
+      <div class="form-field"><label>Número de caja</label><input id="f-numero_caja" value="${r.numero_caja||''}" placeholder="Ej: 12"></div>
+      <div class="form-field"><label>Ubicación</label><input id="f-ubicacion" value="${r.ubicacion||''}" placeholder="Ej: Estantería A - Fila 3"></div>
       <div class="form-field"><label>Mes</label><select id="f-mes">${mesOptsOpcional}</select></div>
       <div class="form-field full"><label>Área</label><input id="f-area" value="${r.area||''}" placeholder="Ej: Contabilidad"></div>
       <div class="form-field full"><label>Contenido</label><textarea id="f-contenido">${r.contenido||''}</textarea></div>
@@ -168,7 +170,7 @@ async function saveRecord() {
   let table = '';
 
   if(type === 'general') {
-    data = { año: val('f-año')||null, mes: val('f-mes')?parseInt(val('f-mes')):null, area: val('f-area')||null, contenido: val('f-contenido')||null, estado: val('f-estado')||null };
+    data = { año: val('f-año')||null, numero_caja: val('f-numero_caja')||null, ubicacion: val('f-ubicacion')||null, mes: val('f-mes')?parseInt(val('f-mes')):null, area: val('f-area')||null, contenido: val('f-contenido')||null, estado: val('f-estado')||null };
     table = 'archivo_general';
   } else if(type === 'gestion_activos') {
     if(!val('f-nombre') || !val('f-cedula')) { toast('Completa nombre y cédula', 'error'); return; }
