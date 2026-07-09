@@ -80,6 +80,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .sidebar { width: var(--sidebar-w); background: #0C1638; border-right: none; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 40; transition: transform 0.25s ease; }
 .main { margin-left: var(--sidebar-w); flex: 1; padding: 2rem; min-height: 100vh; background: var(--bg); min-width: 0; transition: margin-left 0.25s ease; }
 
+/* When layout has this class, hide the sidebar and expand main */
+.layout.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+.layout.sidebar-collapsed .main { margin-left: 0; }
+
+/* Inline toggle button placed inside each .header-actions */
+.toggle-sidebar-inline {
+  display: inline-flex; align-items: center; gap:8px; padding:6px 10px; height:36px;
+  border-radius:10px; background:#fff; color:var(--text-2); border:1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(16,26,46,0.06); cursor:pointer; font-weight:600;
+}
+.toggle-sidebar-inline i { font-size:16px; }
+
+@media (max-width: 900px) { .toggle-sidebar-inline { display:none; } }
+
 .mobile-topbar { display: none; }
 .sidebar-scrim { display: none; }
 
