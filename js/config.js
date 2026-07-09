@@ -17,4 +17,7 @@ let currentModal = null;
 let editingId = null;
 let uploadedFotoUrl = null;
 let bajaRecordData = null;
+let radicadosPage = 0;
+const RADICADOS_PAGE_SIZE = 50;
+let radicadosTotal = 0;
 

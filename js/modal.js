@@ -10,14 +10,16 @@ function openModal(type, record) {
     gestion_activos: record ? 'Editar personal activo' : 'Nuevo personal activo',
     gestion_inactivos: record ? 'Editar personal inactivo' : 'Nuevo personal inactivo',
     presidencia: record ? 'Editar documento' : 'Nuevo documento — Presidencia',
+    radicados: record ? 'Editar radicado' : 'Nuevo radicado',
     prestamo: 'Registrar préstamo'
   };
   document.getElementById('modal-title').textContent = titles[type] || type;
   const r = record || {};
   const yearOpts = Array.from({length:30},(_,i)=>2000+i).map(y=>`<option value="${y}" ${r.año==y?'selected':y===new Date().getFullYear()?'selected':''}>${y}</option>`).join('');
   const mesOpts = MESES.map((m,i)=>`<option value="${i+1}" ${r.mes==i+1?'selected':''}>${m}</option>`).join('');
+  const mesOptsOpcional = '<option value="">Sin especificar</option>' + mesOpts;
   const diaOpts = Array.from({length:31},(_,i)=>`<option value="${i+1}" ${r.dia==i+1?'selected':''}>${i+1}</option>`).join('');
-  const estadoOpts = ['Disponible','Prestado','En revisión'].map(s=>`<option value="${s}" ${r.estado===s?'selected':''}>${s}</option>`).join('');
+  const estadoOpts = '<option value="">Sin especificar</option>' + ['Disponible','Prestado','En revisión'].map(s=>`<option value="${s}" ${r.estado===s?'selected':''}>${s}</option>`).join('');
   const archOpts = ['Archivo general','Gestión humana — Activos','Gestión humana — Inactivos','Presidencia'].map(a=>`<option>${a}</option>`).join('');
 
   const fotoBlock = (tipo) => `
@@ -37,8 +39,8 @@ function openModal(type, record) {
   let body = '';
   if(type === 'general') {
     body = `<div class="form-grid">
-      <div class="form-field"><label>Año</label><select id="f-año">${yearOpts}</select></div>
-      <div class="form-field"><label>Mes</label><select id="f-mes">${mesOpts}</select></div>
+      <div class="form-field"><label>Año(s)</label><input id="f-año" value="${r.año||''}" placeholder="Ej: 2020 o 2018-2022"></div>
+      <div class="form-field"><label>Mes</label><select id="f-mes">${mesOptsOpcional}</select></div>
       <div class="form-field full"><label>Área</label><input id="f-area" value="${r.area||''}" placeholder="Ej: Contabilidad"></div>
       <div class="form-field full"><label>Contenido</label><textarea id="f-contenido">${r.contenido||''}</textarea></div>
       <div class="form-field"><label>Estado</label><select id="f-estado">${estadoOpts}</select></div>
@@ -84,6 +86,20 @@ function openModal(type, record) {
       <div class="form-field full"><label>Resumen (tema)</label><input id="f-resumen" value="${r.resumen||''}" placeholder="Ej: Junta Directiva"></div>
       <div class="form-field full"><label>Fecha</label><input id="f-fecha" value="${r.fecha||''}" placeholder="Ej: 2021-05-14, 2020, o un rango como 2018-2021"></div>
       <div class="form-field full"><label>Contenido</label><textarea id="f-contenido">${r.contenido||''}</textarea></div>
+    </div>`;
+  } else if(type === 'radicados') {
+    const tipoOpts = ['','Personal','Corporativo'].map(t=>`<option value="${t}" ${r.tipo===t?'selected':''}>${t||'Sin especificar'}</option>`).join('');
+    body = `<div class="form-grid">
+      <div class="form-field"><label>Consecutivo</label><input id="f-consecutivo" value="${r.consecutivo||''}" placeholder="Ej: DAN-210104-0002"></div>
+      <div class="form-field"><label>Fecha de recibido</label><input type="date" id="f-fecha_recibido" value="${r.fecha_recibido||''}"></div>
+      <div class="form-field"><label>Hora de recibido</label><input id="f-hora_recibido" value="${r.hora_recibido||''}" placeholder="Ej: 8:36 a.m."></div>
+      <div class="form-field"><label>Tipo</label><select id="f-tipo-radicado">${tipoOpts}</select></div>
+      <div class="form-field full"><label>Documento</label><textarea id="f-documento" style="min-height:55px">${r.documento||''}</textarea></div>
+      <div class="form-field"><label>Remitente</label><input id="f-remitente" value="${r.remitente||''}"></div>
+      <div class="form-field"><label>Área</label><input id="f-area-radicado" value="${r.area||''}"></div>
+      <div class="form-field"><label>Destinatario</label><input id="f-destinatario" value="${r.destinatario||''}"></div>
+      <div class="form-field"><label>Responsable que recibe</label><input id="f-responsable_recibe" value="${r.responsable_recibe||''}"></div>
+      <div class="form-field full"><label>Soporte / observaciones</label><input id="f-soporte" value="${r.soporte||''}"></div>
     </div>`;
   } else if(type === 'prestamo') {
     body = `<div class="form-grid">
@@ -152,8 +168,7 @@ async function saveRecord() {
   let table = '';
 
   if(type === 'general') {
-    if(!val('f-area') || !val('f-contenido')) { toast('Completa área y contenido', 'error'); return; }
-    data = { año: parseInt(val('f-año')), mes: parseInt(val('f-mes')), area: val('f-area'), contenido: val('f-contenido'), estado: val('f-estado')||'Disponible' };
+    data = { año: val('f-año')||null, mes: val('f-mes')?parseInt(val('f-mes')):null, area: val('f-area')||null, contenido: val('f-contenido')||null, estado: val('f-estado')||null };
     table = 'archivo_general';
   } else if(type === 'gestion_activos') {
     if(!val('f-nombre') || !val('f-cedula')) { toast('Completa nombre y cédula', 'error'); return; }
@@ -167,6 +182,9 @@ async function saveRecord() {
     if(!val('f-estante') || !val('f-seccion') || !val('f-modulo') || !val('f-resumen')) { toast('Completa estante, sección, módulo y resumen', 'error'); return; }
     data = { estante: val('f-estante'), seccion: val('f-seccion').toUpperCase(), modulo: val('f-modulo'), resumen: val('f-resumen'), tipo: val('f-tipo')||null, fecha: val('f-fecha')||null, contenido: val('f-contenido')||null };
     table = 'presidencia';
+  } else if(type === 'radicados') {
+    data = { consecutivo: val('f-consecutivo')||null, fecha_recibido: val('f-fecha_recibido')||null, hora_recibido: val('f-hora_recibido')||null, tipo: val('f-tipo-radicado')||null, documento: val('f-documento')||null, remitente: val('f-remitente')||null, area: val('f-area-radicado')||null, destinatario: val('f-destinatario')||null, responsable_recibe: val('f-responsable_recibe')||null, soporte: val('f-soporte')||null };
+    table = 'radicados';
   } else if(type === 'prestamo') {
     if(!val('f-documento') || !val('f-solicitante') || !val('f-fecha_devolucion')) { toast('Completa los campos obligatorios', 'error'); return; }
     data = { archivo: val('f-archivo'), documento: val('f-documento'), solicitante: val('f-solicitante'), fecha_salida: val('f-fecha_salida'), fecha_devolucion: val('f-fecha_devolucion'), observaciones: val('f-observaciones'), estado: 'activo' };
@@ -186,11 +204,12 @@ async function saveRecord() {
   if(type==='general') loadGeneral();
   else if(type==='gestion_activos'||type==='gestion_inactivos') loadGestion();
   else if(type==='presidencia') loadPresidencia();
+  else if(type==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
   else if(type==='prestamo') { loadPrestamos(); loadDashboard(); }
 }
 
 async function editRecord(type, id) {
-  const tableMap = { general:'archivo_general', gestion_activos:'personal_activo', gestion_inactivos:'personal_inactivo', presidencia:'presidencia' };
+  const tableMap = { general:'archivo_general', gestion_activos:'personal_activo', gestion_inactivos:'personal_inactivo', presidencia:'presidencia', radicados:'radicados' };
   const { data, error } = await sb.from(tableMap[type]).select('*').eq('id', id).single();
   if(error || !data) { toast('Error al cargar el registro', 'error'); return; }
   if(type==='gestion_activos') gestionTab='activos';
@@ -206,6 +225,7 @@ async function deleteRecord(table, id, section) {
   if(section==='general') loadGeneral();
   else if(section==='gestion') loadGestion();
   else if(section==='presidencia') loadPresidencia();
+  else if(section==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
   else if(section==='prestamos') { loadPrestamos(); loadDashboard(); }
 }
 

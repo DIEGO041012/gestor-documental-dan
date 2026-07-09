@@ -35,6 +35,7 @@
       <a class="nav-item" data-mod="general" onclick="showSection('general')"><i class="ti ti-archive"></i> Doc. general</a>
       <a class="nav-item" data-mod="gestion" onclick="showSection('gestion')"><i class="ti ti-users"></i> Gestión humana</a>
       <a class="nav-item" data-mod="presidencia" onclick="showSection('presidencia')"><i class="ti ti-building"></i> Presidencia</a>
+      <a class="nav-item" data-mod="radicados" onclick="showSection('radicados')"><i class="ti ti-mail"></i> Radicados</a>
       <div class="nav-section">Gestión</div>
       <a class="nav-item" data-mod="prestamos" onclick="showSection('prestamos')"><i class="ti ti-arrow-right-left"></i> Préstamos</a>
       <a class="nav-item" data-mod="reportes" onclick="showSection('reportes')"><i class="ti ti-chart-bar"></i> Reportes</a>
@@ -70,6 +71,7 @@
         <div class="stat-card"><div class="stat-icon red"><i class="ti ti-user-off"></i></div><div class="stat-value" id="s-inactivos">—</div><div class="stat-label">Personal inactivo</div></div>
         <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-building"></i></div><div class="stat-value" id="s-presidencia">—</div><div class="stat-label">Presidencia</div></div>
         <div class="stat-card"><div class="stat-icon yellow"><i class="ti ti-arrow-right-left"></i></div><div class="stat-value" id="s-prestamos">—</div><div class="stat-label">Préstamos activos</div></div>
+        <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-mail"></i></div><div class="stat-value" id="s-radicados">—</div><div class="stat-label">Radicados</div></div>
       </div>
       <div class="card">
         <div class="card-header"><span class="card-title">Préstamos activos y vencidos</span></div>
@@ -81,7 +83,7 @@
     <div id="section-general" class="section">
       <div class="page-header">
         <h1>Documentación general</h1>
-        <p>Cajas del archivo general por año, mes, área y contenido</p>
+        <p>Cajas del archivo general — una caja puede abarcar varios años (ej: "2018-2022")</p>
         <div class="header-actions">
           <button class="btn btn-secondary" onclick="exportExcel('general')"><i class="ti ti-download"></i> Exportar Excel</button>
           <button class="btn btn-primary" onclick="openModal('general')"><i class="ti ti-plus"></i> Agregar caja</button>
@@ -89,11 +91,10 @@
       </div>
       <div class="card">
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-general" placeholder="Buscar por área, contenido..." oninput="loadGeneral()"></div>
-          <select class="filter" id="filter-general-year" onchange="loadGeneral()"><option value="">Todos los años</option></select>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-general" placeholder="Buscar por año, área o contenido..." oninput="loadGeneral()"></div>
         </div>
         <div class="table-wrap">
-          <table><thead><tr><th>#</th><th>Año</th><th>Mes</th><th>Área</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <table><thead><tr><th>#</th><th>Año(s)</th><th>Mes</th><th>Área</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead>
           <tbody id="table-general"><tr><td colspan="7"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
         </div>
       </div>
@@ -143,6 +144,41 @@
         <div class="table-wrap">
           <table><thead><tr><th>#</th><th>Estante</th><th>Sección</th><th>Módulo</th><th>Resumen</th><th>Tipo</th><th>Fecha</th><th>Contenido</th><th>Acciones</th></tr></thead>
           <tbody id="table-presidencia"><tr><td colspan="9"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RADICADOS -->
+    <div id="section-radicados" class="section">
+      <div class="page-header">
+        <h1>Radicados</h1>
+        <p>Correspondencia física — consecutivo, remitente, área y destinatario</p>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="exportExcel('radicados')"><i class="ti ti-download"></i> Exportar Excel</button>
+          <button class="btn btn-success" onclick="openImportRadicadosModal()"><i class="ti ti-upload"></i> Importar Excel</button>
+          <button class="btn btn-primary" onclick="openModal('radicados')"><i class="ti ti-plus"></i> Agregar registro</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="search-row">
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-radicados" placeholder="Buscar por consecutivo, documento, remitente o destinatario..." oninput="radicadosPage=0;loadRadicados()"></div>
+          <select class="filter" id="filter-radicados-area" onchange="radicadosPage=0;loadRadicados()"><option value="">Todas las áreas</option></select>
+          <select class="filter" id="filter-radicados-tipo" onchange="radicadosPage=0;loadRadicados()">
+            <option value="">Todos los tipos</option>
+            <option value="Personal">Personal</option>
+            <option value="Corporativo">Corporativo</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>#</th><th>Consecutivo</th><th>Fecha</th><th>Hora</th><th>Documento</th><th>Tipo</th><th>Remitente</th><th>Área</th><th>Destinatario</th><th>Responsable</th><th>Acciones</th></tr></thead>
+          <tbody id="table-radicados"><tr><td colspan="11"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0.85rem 1.25rem;border-top:1px solid var(--border);flex-wrap:wrap">
+          <span id="radicados-page-info" style="font-size:12px;color:var(--text-2)"></span>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary btn-sm" onclick="radicadosPrevPage()"><i class="ti ti-chevron-left"></i> Anterior</button>
+            <button class="btn btn-secondary btn-sm" onclick="radicadosNextPage()">Siguiente <i class="ti ti-chevron-right"></i></button>
+          </div>
         </div>
       </div>
     </div>
@@ -248,6 +284,39 @@
   </div>
 </div>
 
+<!-- MODAL IMPORTAR — RADICADOS -->
+<div class="overlay" id="import-radicados-overlay" onclick="closeImportRadicadosOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Importar desde Excel — Radicados</h3>
+      <button class="modal-close" onclick="closeImportRadicados()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text-2);margin-bottom:0.75rem;padding:8px 10px;background:var(--accent-bg);border-radius:var(--radius)">
+        Se leen <strong>todas las hojas</strong> del archivo (formato "Correspondencia física de radicados"). Los encabezados no importan — se identifican por posición de columna, igual que en tu plantilla oficial.
+      </div>
+      <div class="import-zone" onclick="document.getElementById('file-input-radicados').click()">
+        <i class="ti ti-upload"></i>
+        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Selecciona un archivo Excel</div>
+        <span>Formatos soportados: .xlsx, .xls</span>
+      </div>
+      <input type="file" id="file-input-radicados" accept=".xlsx,.xls" style="display:none" onchange="handleFileImportRadicados(event)">
+      <div id="import-preview-radicados" style="display:none;margin-top:1rem"></div>
+      <div id="import-progress-radicados" style="display:none;margin-top:1rem">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);margin-bottom:6px">
+          <span id="import-progress-label">Importando...</span>
+          <span id="import-progress-count"></span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="import-progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeImportRadicados()">Cancelar</button>
+      <button class="btn btn-primary" id="btn-import-radicados-confirm" style="display:none" onclick="confirmImportRadicados()"><i class="ti ti-check"></i> Importar registros</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
 
 <!-- ═══ SCRIPTS: el orden importa (config y utils van primero) ═══ -->
@@ -258,11 +327,13 @@
 <script src="js/general.js"></script>
 <script src="js/gestion.js"></script>
 <script src="js/presidencia.js"></script>
+<script src="js/radicados.js"></script>
 <script src="js/prestamos.js"></script>
 <script src="js/reportes.js"></script>
 <script src="js/modal.js"></script>
 <script src="js/importar.js"></script>
 <script src="js/importar_presidencia.js"></script>
+<script src="js/importar_radicados.js"></script>
 <script src="js/exportar.js"></script>
 <script src="js/init.js"></script>
 </body>

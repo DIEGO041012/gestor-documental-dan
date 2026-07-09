@@ -15,14 +15,15 @@ function showSection(s) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('section-' + s).classList.add('active');
   const navItems = document.querySelectorAll('.nav-item');
-  const map = {dashboard:0,general:1,gestion:2,presidencia:3,prestamos:4,reportes:5};
+  const map = {dashboard:0,general:1,gestion:2,presidencia:3,radicados:4,prestamos:5,reportes:6};
   if(navItems[map[s]]) navItems[map[s]].classList.add('active');
   closeSidebar();
   window.scrollTo({top:0, behavior:'smooth'});
   if(s==='dashboard') loadDashboard();
-  else if(s==='general') { loadGeneral(); populateYearFilter(); }
+  else if(s==='general') { loadGeneral(); }
   else if(s==='gestion') loadGestion();
   else if(s==='presidencia') { loadPresidencia(); populateSeccionFilter(); }
+  else if(s==='radicados') { radicadosPage = 0; loadRadicados(); populateRadicadosFilters(); }
   else if(s==='prestamos') loadPrestamos();
   else if(s==='reportes') loadReportes();
 }

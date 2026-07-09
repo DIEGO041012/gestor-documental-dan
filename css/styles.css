@@ -27,6 +27,8 @@
   --m-presidencia-bg: #F0E9FD;
   --m-prestamos: #B45309;
   --m-prestamos-bg: #FCEFDC;
+  --m-radicados: #0369A1;
+  --m-radicados-bg: #E1F0FA;
   --m-reportes: #334155;
   --m-reportes-bg: #E9ECF1;
 
@@ -109,6 +111,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .nav-item[data-mod="general"] { --nav-accent: #5B8DEF; }
 .nav-item[data-mod="gestion"] { --nav-accent: #2DD4BF; }
 .nav-item[data-mod="presidencia"] { --nav-accent: #A78BFA; }
+.nav-item[data-mod="radicados"] { --nav-accent: #38BDF8; }
 .nav-item[data-mod="prestamos"] { --nav-accent: #F2A65A; }
 .nav-item[data-mod="reportes"] { --nav-accent: #94A3B8; }
 
@@ -126,6 +129,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 #section-gestion .page-header { --section-accent: var(--m-gestion); }
 #section-presidencia .page-header { --section-accent: var(--m-presidencia); }
 #section-prestamos .page-header { --section-accent: var(--m-prestamos); }
+#section-radicados .page-header { --section-accent: var(--m-radicados); }
 #section-reportes .page-header { --section-accent: var(--m-reportes); }
 
 /* BUTTONS */

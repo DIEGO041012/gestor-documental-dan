@@ -20,18 +20,25 @@ async function exportExcel(type) {
     const { data } = await sb.from('prestamos').select('*').order('created_at');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet((data||[]).map((r,i)=>({'#':i+1,'Archivo':r.archivo,'Documento':r.documento,'Solicitante':r.solicitante,'Salida':r.fecha_salida,'Devolución':r.fecha_devolucion,'Estado':r.estado,'Observaciones':r.observaciones||''}))), 'Préstamos');
     XLSX.writeFile(wb, 'inventario_prestamos.xlsx');
+  } else if(type==='radicados') {
+    toast('Preparando exportación, puede tardar unos segundos...');
+    const { data } = await sb.from('radicados').select('*').order('fecha_recibido');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet((data||[]).map((r,i)=>({'#':i+1,'Consecutivo':r.consecutivo,'Fecha de recibido':r.fecha_recibido,'Hora':r.hora_recibido,'Documento':r.documento,'Tipo':r.tipo,'Remitente':r.remitente,'Área':r.area,'Destinatario':r.destinatario,'Responsable que recibe':r.responsable_recibe,'Soporte':r.soporte}))), 'Radicados');
+    XLSX.writeFile(wb, 'inventario_radicados.xlsx');
   }
   toast('Excel exportado');
 }
 
 async function exportReporteCompleto() {
   const wb = XLSX.utils.book_new();
-  const [g, a, i, p, pr] = await Promise.all([
+  toast('Preparando reporte completo, puede tardar un momento...');
+  const [g, a, i, p, pr, rad] = await Promise.all([
     sb.from('archivo_general').select('*').order('año'),
     sb.from('personal_activo').select('*').order('nombre'),
     sb.from('personal_inactivo').select('*').order('nombre'),
     sb.from('presidencia').select('*').order('seccion').order('modulo'),
     sb.from('prestamos').select('*').order('created_at'),
+    sb.from('radicados').select('*').order('fecha_recibido'),
   ]);
   const resumen = [
     {Archivo:'Documentación general', Registros: g.data?.length||0},
@@ -39,6 +46,7 @@ async function exportReporteCompleto() {
     {Archivo:'Personal inactivo', Registros: i.data?.length||0},
     {Archivo:'Presidencia', Registros: p.data?.length||0},
     {Archivo:'Préstamos totales', Registros: pr.data?.length||0},
+    {Archivo:'Radicados', Registros: rad.data?.length||0},
   ];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumen), 'Resumen');
   if(g.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(g.data.map((r,i)=>({'#':i+1,'Año':r.año,'Mes':MESES[r.mes-1]||r.mes,'Área':r.area,'Contenido':r.contenido,'Estado':r.estado}))), 'Archivo General');
@@ -46,6 +54,7 @@ async function exportReporteCompleto() {
   if(i.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(i.data.map((r,i)=>({'#':i+1,'Nombre':r.nombre,'Cédula':r.cedula,'Inicio':r.fecha_inicio,'Final':r.fecha_final,'Ubicación':r.ubicacion}))), 'Personal Inactivo');
   if(p.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(p.data.map((r,i)=>({'#':i+1,'Estante':r.estante,'Sección':r.seccion,'Módulo':r.modulo,'Resumen':r.resumen,'Tipo':r.tipo,'Fecha':r.fecha,'Contenido':r.contenido}))), 'Presidencia');
   if(pr.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pr.data.map((r,i)=>({'#':i+1,'Archivo':r.archivo,'Documento':r.documento,'Solicitante':r.solicitante,'Salida':r.fecha_salida,'Devolución':r.fecha_devolucion,'Estado':r.estado}))), 'Préstamos');
+  if(rad.data?.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rad.data.map((r,i)=>({'#':i+1,'Consecutivo':r.consecutivo,'Fecha':r.fecha_recibido,'Hora':r.hora_recibido,'Documento':r.documento,'Tipo':r.tipo,'Remitente':r.remitente,'Área':r.area,'Destinatario':r.destinatario,'Responsable':r.responsable_recibe,'Soporte':r.soporte}))), 'Radicados');
   XLSX.writeFile(wb, 'reporte_completo_archivo.xlsx');
   toast('Reporte completo exportado');
 }

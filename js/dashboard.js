@@ -1,17 +1,19 @@
 // ── DASHBOARD ──────────────────────────────────────────────────────────────
 async function loadDashboard() {
-  const [g, a, i, p, pr] = await Promise.all([
+  const [g, a, i, p, pr, rad] = await Promise.all([
     sb.from('archivo_general').select('id', {count:'exact', head:true}),
     sb.from('personal_activo').select('id', {count:'exact', head:true}),
     sb.from('personal_inactivo').select('id', {count:'exact', head:true}),
     sb.from('presidencia').select('id', {count:'exact', head:true}),
     sb.from('prestamos').select('id', {count:'exact', head:true}).eq('estado','activo'),
+    sb.from('radicados').select('id', {count:'exact', head:true}),
   ]);
   document.getElementById('s-general').textContent = g.count ?? 0;
   document.getElementById('s-activos').textContent = a.count ?? 0;
   document.getElementById('s-inactivos').textContent = i.count ?? 0;
   document.getElementById('s-presidencia').textContent = p.count ?? 0;
   document.getElementById('s-prestamos').textContent = pr.count ?? 0;
+  document.getElementById('s-radicados').textContent = (rad.count ?? 0).toLocaleString('es-CO');
 
   const { data: loans } = await sb.from('prestamos').select('*').eq('estado','activo').order('fecha_devolucion');
   const hoy = new Date();
