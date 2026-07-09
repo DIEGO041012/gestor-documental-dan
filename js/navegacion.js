@@ -49,7 +49,7 @@ function showSection(s) {
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
   document.getElementById('section-' + s).classList.add('active');
   const navItems = document.querySelectorAll('.nav-item');
-  const map = {dashboard:0,general:1,gestion:2,presidencia:3,radicados:4,prestamos:5,reportes:6};
+  const map = {dashboard:0,general:1,gestion:2,presidencia:3,radicados:4,recepcion_contabilidad:5,prestamos:6,reportes:7};
   if(navItems[map[s]]) navItems[map[s]].classList.add('active');
   closeSidebar();
   window.scrollTo({top:0, behavior:'smooth'});

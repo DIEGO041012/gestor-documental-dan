@@ -237,6 +237,30 @@ tr:hover td { background: var(--accent-bg) !important; }
   font-size: 13px; background: var(--surface); color: var(--text); font-family: var(--font-body);
   transition: border-color 0.15s; width: 100%; max-width: 100%;
 }
+
+.reception-form { display: flex; flex-direction: column; gap: 1.25rem; }
+.reception-documents { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; }
+.reception-documents-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 0.85rem; }
+.reception-document-row { display: grid; grid-template-columns: 1fr 1fr 2fr auto; gap: 12px; align-items: end; margin-bottom: 0.75rem; }
+
+.print-page { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+.print-header { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+.print-logo { background: var(--accent); color: white; font-weight: 800; padding: 0.75rem 1rem; border-radius: 12px; font-size: 16px; }
+.print-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.8px; }
+.print-meta { text-align: right; font-size: 12px; color: var(--text-2); display: grid; gap: 4px; }
+.print-subtitle { font-size: 13px; color: var(--text-2); margin-bottom: 1rem; }
+.print-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.print-table th, .print-table td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; }
+.print-table th { background: var(--surface2); text-transform: uppercase; font-size: 11px; letter-spacing: 0.6px; }
+.print-table tbody tr:nth-child(even) { background: #FAFBFE; }
+.print-footer { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; font-size: 13px; color: var(--text-2); }
+.print-action { margin-top: 1rem; text-align: right; }
+
+@media print {
+  body * { visibility: hidden !important; }
+  #recepcion-contabilidad-print, #recepcion-contabilidad-print * { visibility: visible !important; }
+  #recepcion-contabilidad-print { position: absolute; left: 0; top: 0; width: 100%; }
+}
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
   outline: none; border-color: var(--accent-light); box-shadow: 0 0 0 3px var(--accent-bg);
 }
