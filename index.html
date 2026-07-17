@@ -39,6 +39,7 @@
       <a class="nav-item" data-mod="recepcion_contabilidad" onclick="showSection('recepcion_contabilidad')"><i class="ti ti-file-text"></i> Recepción contabilidad</a>
       <div class="nav-section">Gestión</div>
       <a class="nav-item" data-mod="prestamos" onclick="showSection('prestamos')"><i class="ti ti-arrow-right-left"></i> Préstamos</a>
+      <a class="nav-item" data-mod="tareas" onclick="showSection('tareas')"><i class="ti ti-layout-kanban"></i> Tareas y citas</a>
       <a class="nav-item" data-mod="reportes" onclick="showSection('reportes')"><i class="ti ti-chart-bar"></i> Reportes</a>
     </nav>
     <div class="sidebar-footer">v2.1 · Supabase + Cloudinary</div>
@@ -215,6 +216,25 @@
       <div id="loans-list"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></div>
     </div>
 
+    <!-- TAREAS Y CITAS -->
+    <div id="section-tareas" class="section">
+      <div class="page-header">
+        <h1>Tareas y citas</h1>
+        <p>Organiza el trabajo pendiente y programa recordatorios</p>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="requestTaskNotifications()"><i class="ti ti-bell"></i> Activar notificaciones</button>
+          <button class="btn btn-success" onclick="openAppointmentModal()"><i class="ti ti-calendar-plus"></i> Programar cita</button>
+          <button class="btn btn-primary" onclick="openTaskModal()"><i class="ti ti-plus"></i> Nueva tarea</button>
+        </div>
+      </div>
+      <div class="task-summary" id="task-summary"></div>
+      <div class="kanban-board" id="kanban-board"></div>
+      <div class="card appointments-card">
+        <div class="card-header"><span class="card-title"><i class="ti ti-calendar-event"></i> Próximas citas</span></div>
+        <div class="card-body" id="appointments-list"></div>
+      </div>
+    </div>
+
     <!-- REPORTES -->
     <div id="section-reportes" class="section">
       <div class="page-header">
@@ -228,6 +248,15 @@
     </div>
 
   </main>
+</div>
+
+<!-- MODAL TAREAS Y CITAS -->
+<div class="overlay" id="task-overlay" onclick="closeTaskModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header"><h3 id="task-modal-title">Nueva tarea</h3><button class="modal-close" onclick="closeTaskModal()"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body" id="task-modal-body"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeTaskModal()">Cancelar</button><button class="btn btn-primary" onclick="saveTaskOrAppointment()"><i class="ti ti-check"></i> Guardar</button></div>
+  </div>
 </div>
 
 <!-- MODAL PRINCIPAL -->
@@ -348,6 +377,7 @@
 <script src="js/presidencia.js"></script>
 <script src="js/radicados.js"></script>
 <script src="js/prestamos.js"></script>
+<script src="js/tareas.js"></script>
 <script src="js/reportes.js"></script>
 <script src="js/modal.js"></script>
 <script src="js/importar.js"></script>
