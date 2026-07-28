@@ -19,6 +19,6 @@ async function loadGeneral() {
     <td>${r.area||'-'}</td>
     <td style="max-width:200px">${r.contenido||'-'}</td>
     <td>${r.estado ? `<span class="badge ${r.estado==='Disponible'?'badge-ok':r.estado==='Prestado'?'badge-warn':'badge-blue'}">${r.estado}</span>` : '-'}</td>
-    <td><button class="btn btn-edit" onclick="editRecord('general','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('archivo_general','${r.id}','general')">Eliminar</button></td>
+    <td><button class="btn btn-warning" onclick="openGeneralTransfer('${r.id}')"><i class="ti ti-truck-delivery"></i> Trasladar</button><button class="btn btn-edit" onclick="editRecord('general','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('archivo_general','${r.id}','general')">Eliminar</button></td>
   </tr>`).join('');
 }

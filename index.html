@@ -33,10 +33,12 @@
       <a class="nav-item active" data-mod="dashboard" onclick="showSection('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
       <div class="nav-section">Archivos</div>
       <a class="nav-item" data-mod="general" onclick="showSection('general')"><i class="ti ti-archive"></i> Doc. general</a>
+      <a class="nav-item" data-mod="bodega_primavera" onclick="showSection('bodega_primavera')"><i class="ti ti-building-warehouse"></i> Bodega Primavera</a>
       <a class="nav-item" data-mod="gestion" onclick="showSection('gestion')"><i class="ti ti-users"></i> Gestión humana</a>
       <a class="nav-item" data-mod="presidencia" onclick="showSection('presidencia')"><i class="ti ti-building"></i> Presidencia</a>
       <a class="nav-item" data-mod="radicados" onclick="showSection('radicados')"><i class="ti ti-mail"></i> Radicados</a>
       <a class="nav-item" data-mod="recepcion_contabilidad" onclick="showSection('recepcion_contabilidad')"><i class="ti ti-file-text"></i> Recepción contabilidad</a>
+      <a class="nav-item" data-mod="iron_mountain" onclick="showSection('iron_mountain')"><i class="ti ti-building-warehouse"></i> Registros Iron Mountain</a>
       <div class="nav-section">Gestión</div>
       <a class="nav-item" data-mod="prestamos" onclick="showSection('prestamos')"><i class="ti ti-arrow-right-left"></i> Préstamos</a>
       <a class="nav-item" data-mod="tareas" onclick="showSection('tareas')"><i class="ti ti-layout-kanban"></i> Tareas y citas</a>
@@ -101,6 +103,23 @@
           <table><thead><tr><th>#</th><th>Año(s)</th><th>Número caja</th><th>Ubicación</th><th>Mes</th><th>Área</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead>
           <tbody id="table-general"><tr><td colspan="9"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
         </div>
+      </div>
+    </div>
+
+    <!-- GESTIÓN HUMANA -->
+    <!-- BODEGA PRIMAVERA -->
+    <div id="section-bodega_primavera" class="section">
+      <div class="page-header">
+        <h1>Bodega Primavera</h1>
+        <p>Cajas trasladadas desde Documentación general y registros almacenados en bodega</p>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="exportExcel('bodega_primavera')"><i class="ti ti-download"></i> Exportar Excel</button>
+          <button class="btn btn-primary" onclick="openModal('bodega_primavera')"><i class="ti ti-plus"></i> Agregar caja</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="search-row"><div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-bodega-primavera" placeholder="Buscar por año, caja, ubicación, área o contenido..." oninput="loadBodegaPrimavera()"></div></div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Año(s)</th><th>Número caja</th><th>Ubicación</th><th>Mes</th><th>Área</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="table-bodega-primavera"><tr><td colspan="9"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table></div>
       </div>
     </div>
 
@@ -203,6 +222,34 @@
       </div>
     </div>
 
+    <!-- REGISTROS IRON MOUNTAIN -->
+    <div id="section-iron_mountain" class="section">
+      <div class="page-header">
+        <h1>Registros Iron Mountain</h1>
+        <p>Inventario de cajas y carpetas en custodia externa</p>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="exportExcel('iron_mountain')"><i class="ti ti-download"></i> Exportar Excel</button>
+          <button class="btn btn-success" onclick="openImportIronMountainModal()"><i class="ti ti-upload"></i> Importar Excel</button>
+          <button class="btn btn-primary" onclick="openModal(ironMountainTab === 'carpetas' ? 'iron_carpetas' : 'iron_cajas')"><i class="ti ti-plus"></i> Agregar registro</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" id="iron-tab-carpetas" onclick="setIronMountainTab('carpetas')">Carpetas</button>
+          <button class="tab" id="iron-tab-cajas" onclick="setIronMountainTab('cajas')">Cajas</button>
+        </div>
+        <div class="search-row">
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-iron-mountain" placeholder="Buscar por código, caja, descripción o estado..." oninput="ironMountainPage=0;loadIronMountain()"></div>
+          <select class="filter" id="filter-iron-estado" onchange="ironMountainPage=0;loadIronMountain()"><option value="">Todos los estados</option><option value="EN CUSTODIA">En custodia</option><option value="EN PRESTAMO">En préstamo</option></select>
+        </div>
+        <div class="table-wrap" id="table-iron-mountain-wrap"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></div>
+        <div class="pagination-row">
+          <span id="iron-page-info"></span>
+          <div><button class="btn btn-secondary btn-sm" onclick="ironMountainPrevPage()"><i class="ti ti-chevron-left"></i> Anterior</button> <button class="btn btn-secondary btn-sm" onclick="ironMountainNextPage()">Siguiente <i class="ti ti-chevron-right"></i></button></div>
+        </div>
+      </div>
+    </div>
+
     <!-- PRÉSTAMOS -->
     <div id="section-prestamos" class="section">
       <div class="page-header">
@@ -248,6 +295,20 @@
     </div>
 
   </main>
+</div>
+
+<!-- MODAL TAREAS Y CITAS -->
+<!-- MODAL TRASLADAR DESDE DOCUMENTACIÓN GENERAL -->
+<div class="overlay" id="transfer-overlay" onclick="closeTransferOutside(event)">
+  <div class="modal">
+    <div class="modal-header"><h3>Trasladar caja</h3><button class="modal-close" onclick="closeTransferModal()"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div id="transfer-record-summary" class="info-box"></div>
+      <div class="form-field"><label>Destino</label><select id="transfer-destination" onchange="updateTransferHint()"><option value="bodega_primavera">Bodega Primavera</option><option value="iron_mountain">Iron Mountain</option></select></div>
+      <p id="transfer-hint" style="font-size:12px;color:var(--text-2);margin-top:12px"></p>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeTransferModal()">Cancelar</button><button class="btn btn-primary" id="btn-transfer-confirm" onclick="confirmGeneralTransfer()"><i class="ti ti-truck-delivery"></i> Confirmar traslado</button></div>
+  </div>
 </div>
 
 <!-- MODAL TAREAS Y CITAS -->
@@ -365,6 +426,21 @@
   </div>
 </div>
 
+<!-- MODAL IMPORTAR — IRON MOUNTAIN -->
+<div class="overlay" id="import-iron-overlay" onclick="closeImportIronMountainOutside(event)">
+  <div class="modal">
+    <div class="modal-header"><h3>Importar inventario Iron Mountain</h3><button class="modal-close" onclick="closeImportIronMountainModal()"><i class="ti ti-x"></i></button></div>
+    <div class="modal-body">
+      <div class="info-box">Se leerán las hojas <strong>CARPETAS</strong> y <strong>CAJAS</strong>. Los registros repetidos se actualizarán por su código principal.</div>
+      <div class="import-zone" onclick="document.getElementById('file-input-iron').click()"><i class="ti ti-upload"></i><div style="font-size:14px;font-weight:500;margin-bottom:4px">Selecciona el inventario de Iron Mountain</div><span>Formatos soportados: .xlsx, .xls</span></div>
+      <input type="file" id="file-input-iron" accept=".xlsx,.xls" style="display:none" onchange="handleFileImportIronMountain(event)">
+      <div id="import-preview-iron" style="display:none;margin-top:1rem"></div>
+      <div id="import-progress-iron" style="display:none;margin-top:1rem"><div class="progress-label"><span id="import-progress-iron-label">Importando...</span><span id="import-progress-iron-count"></span></div><div class="bar-track"><div class="bar-fill" id="import-progress-iron-fill" style="width:0%"></div></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeImportIronMountainModal()">Cancelar</button><button class="btn btn-primary" id="btn-import-iron-confirm" style="display:none" onclick="confirmImportIronMountain()"><i class="ti ti-check"></i> Importar registros</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
 
 <!-- ═══ SCRIPTS: el orden importa (config y utils van primero) ═══ -->
@@ -373,6 +449,7 @@
 <script src="js/navegacion.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/general.js"></script>
+<script src="js/bodega_primavera.js"></script>
 <script src="js/gestion.js"></script>
 <script src="js/presidencia.js"></script>
 <script src="js/radicados.js"></script>
@@ -383,6 +460,8 @@
 <script src="js/importar.js"></script>
 <script src="js/importar_presidencia.js"></script>
 <script src="js/importar_radicados.js"></script>
+<script src="js/iron_mountain.js"></script>
+<script src="js/importar_iron_mountain.js"></script>
 <script src="js/exportar.js"></script>
 <script src="js/recepcion_contabilidad.js"></script>
 <script src="js/init.js"></script>

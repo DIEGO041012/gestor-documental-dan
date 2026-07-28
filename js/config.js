@@ -20,4 +20,7 @@ let bajaRecordData = null;
 let radicadosPage = 0;
 const RADICADOS_PAGE_SIZE = 50;
 let radicadosTotal = 0;
-
+let ironMountainTab = 'carpetas';
+let ironMountainPage = 0;
+let ironMountainTotal = 0;
+const IRON_MOUNTAIN_PAGE_SIZE = 50;

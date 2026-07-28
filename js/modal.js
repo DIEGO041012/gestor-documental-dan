@@ -6,11 +6,14 @@ function openModal(type, record) {
   document.getElementById('btn-save').innerHTML = '<i class="ti ti-check"></i> Guardar';
   const titles = {
     general: record ? 'Editar caja' : 'Nueva caja — Archivo general',
+    bodega_primavera: record ? 'Editar caja — Bodega Primavera' : 'Nueva caja — Bodega Primavera',
     gestion: record ? 'Editar registro' : 'Nuevo registro — Gestión humana',
     gestion_activos: record ? 'Editar personal activo' : 'Nuevo personal activo',
     gestion_inactivos: record ? 'Editar personal inactivo' : 'Nuevo personal inactivo',
     presidencia: record ? 'Editar documento' : 'Nuevo documento — Presidencia',
     radicados: record ? 'Editar radicado' : 'Nuevo radicado',
+    iron_carpetas: record ? 'Editar carpeta Iron Mountain' : 'Nueva carpeta Iron Mountain',
+    iron_cajas: record ? 'Editar caja Iron Mountain' : 'Nueva caja Iron Mountain',
     prestamo: 'Registrar préstamo'
   };
   document.getElementById('modal-title').textContent = titles[type] || type;
@@ -37,7 +40,7 @@ function openModal(type, record) {
     </div>`;
 
   let body = '';
-  if(type === 'general') {
+  if(type === 'general' || type === 'bodega_primavera') {
     body = `<div class="form-grid">
       <div class="form-field"><label>Año(s)</label><input id="f-año" value="${r.año||''}" placeholder="Ej: 2020 o 2018-2022"></div>
       <div class="form-field"><label>Número de caja</label><input id="f-numero_caja" value="${r.numero_caja||''}" placeholder="Ej: 12"></div>
@@ -102,6 +105,23 @@ function openModal(type, record) {
       <div class="form-field"><label>Destinatario</label><input id="f-destinatario" value="${r.destinatario||''}"></div>
       <div class="form-field"><label>Responsable que recibe</label><input id="f-responsable_recibe" value="${r.responsable_recibe||''}"></div>
       <div class="form-field full"><label>Soporte / observaciones</label><input id="f-soporte" value="${r.soporte||''}"></div>
+    </div>`;
+  } else if(type === 'iron_carpetas') {
+    body = `<div class="form-grid">
+      <div class="form-field"><label>Carpeta *</label><input id="f-carpeta" value="${r.carpeta||''}"></div><div class="form-field"><label>Cliente</label><input id="f-cliente" value="${r.cliente||''}"></div>
+      <div class="form-field"><label>Alterno</label><input id="f-alterno" value="${r.alterno||''}"></div><div class="form-field"><label>Registro inicial</label><input id="f-registro_inicial" value="${r.registro_inicial||''}"></div>
+      <div class="form-field"><label>Estado</label><input id="f-estado-iron" value="${r.estado||''}"></div><div class="form-field"><label>Caja</label><input id="f-caja" value="${r.caja||''}"></div>
+      <div class="form-field full"><label>Descripción</label><input id="f-descripcion" value="${r.descripcion||''}"></div><div class="form-field"><label>Campo usuario 1</label><input id="f-campo_usuario_1" value="${r.campo_usuario_1||''}"></div><div class="form-field"><label>Campo usuario 2</label><input id="f-campo_usuario_2" value="${r.campo_usuario_2||''}"></div>
+      <div class="form-field"><label>Fecha desde</label><input id="f-fecha_desde" value="${r.fecha_desde||''}"></div><div class="form-field"><label>Fecha hasta</label><input id="f-fecha_hasta" value="${r.fecha_hasta||''}"></div>
+      <div class="form-field"><label>Consecutivo desde</label><input id="f-consecutivo_desde" value="${r.consecutivo_desde||''}"></div><div class="form-field"><label>Consecutivo hasta</label><input id="f-consecutivo_hasta" value="${r.consecutivo_hasta||''}"></div>
+      <div class="form-field"><label>Alterno contenedor</label><input id="f-alterno_contenedor" value="${r.alterno_contenedor||''}"></div><div class="form-field"><label>Sucursal</label><input id="f-sucursal" value="${r.sucursal||''}"></div>
+    </div>`;
+  } else if(type === 'iron_cajas') {
+    body = `<div class="form-grid">
+      <div class="form-field"><label>Caja *</label><input id="f-caja" value="${r.caja||''}"></div><div class="form-field"><label>Cliente</label><input id="f-cliente" value="${r.cliente||''}"></div>
+      <div class="form-field"><label>Código alterno</label><input id="f-codigo_alterno" value="${r.codigo_alterno||''}"></div><div class="form-field"><label>Registro inicial</label><input id="f-registro_inicial" value="${r.registro_inicial||''}"></div>
+      <div class="form-field"><label>Estado</label><input id="f-estado-iron" value="${r.estado||''}"></div><div class="form-field"><label>Sucursal</label><input id="f-sucursal" value="${r.sucursal||''}"></div>
+      <div class="form-field full"><label>Descripción</label><textarea id="f-descripcion">${r.descripcion||''}</textarea></div>
     </div>`;
   } else if(type === 'prestamo') {
     body = `<div class="form-grid">
@@ -169,9 +189,9 @@ async function saveRecord() {
   let data = {};
   let table = '';
 
-  if(type === 'general') {
+  if(type === 'general' || type === 'bodega_primavera') {
     data = { año: val('f-año')||null, numero_caja: val('f-numero_caja')||null, ubicacion: val('f-ubicacion')||null, mes: val('f-mes')?parseInt(val('f-mes')):null, area: val('f-area')||null, contenido: val('f-contenido')||null, estado: val('f-estado')||null };
-    table = 'archivo_general';
+    table = type === 'general' ? 'archivo_general' : 'bodega_primavera';
   } else if(type === 'gestion_activos') {
     if(!val('f-nombre') || !val('f-cedula')) { toast('Completa nombre y cédula', 'error'); return; }
     data = { nombre: val('f-nombre'), cedula: val('f-cedula'), año: parseInt(val('f-año')), mes: parseInt(val('f-mes')), dia: parseInt(val('f-dia')), foto_url: uploadedFotoUrl };
@@ -187,6 +207,14 @@ async function saveRecord() {
   } else if(type === 'radicados') {
     data = { consecutivo: val('f-consecutivo')||null, fecha_recibido: val('f-fecha_recibido')||null, hora_recibido: val('f-hora_recibido')||null, tipo: val('f-tipo-radicado')||null, documento: val('f-documento')||null, remitente: val('f-remitente')||null, area: val('f-area-radicado')||null, destinatario: val('f-destinatario')||null, responsable_recibe: val('f-responsable_recibe')||null, soporte: val('f-soporte')||null };
     table = 'radicados';
+  } else if(type === 'iron_carpetas') {
+    if(!val('f-carpeta')) { toast('Ingresa el código de la carpeta', 'error'); return; }
+    data = {carpeta:val('f-carpeta'),cliente:val('f-cliente')||null,alterno:val('f-alterno')||null,registro_inicial:val('f-registro_inicial')||null,estado:val('f-estado-iron')||null,caja:val('f-caja')||null,descripcion:val('f-descripcion')||null,campo_usuario_1:val('f-campo_usuario_1')||null,campo_usuario_2:val('f-campo_usuario_2')||null,fecha_desde:val('f-fecha_desde')||null,fecha_hasta:val('f-fecha_hasta')||null,consecutivo_desde:val('f-consecutivo_desde')||null,consecutivo_hasta:val('f-consecutivo_hasta')||null,alterno_contenedor:val('f-alterno_contenedor')||null,sucursal:val('f-sucursal')||null};
+    table = 'iron_mountain_carpetas';
+  } else if(type === 'iron_cajas') {
+    if(!val('f-caja')) { toast('Ingresa el código de la caja', 'error'); return; }
+    data = {caja:val('f-caja'),cliente:val('f-cliente')||null,codigo_alterno:val('f-codigo_alterno')||null,registro_inicial:val('f-registro_inicial')||null,estado:val('f-estado-iron')||null,descripcion:val('f-descripcion')||null,sucursal:val('f-sucursal')||null};
+    table = 'iron_mountain_cajas';
   } else if(type === 'prestamo') {
     if(!val('f-documento') || !val('f-solicitante') || !val('f-fecha_devolucion')) { toast('Completa los campos obligatorios', 'error'); return; }
     data = { archivo: val('f-archivo'), documento: val('f-documento'), solicitante: val('f-solicitante'), fecha_salida: val('f-fecha_salida'), fecha_devolucion: val('f-fecha_devolucion'), observaciones: val('f-observaciones'), estado: 'activo' };
@@ -204,14 +232,16 @@ async function saveRecord() {
   toast(editingId ? 'Registro actualizado' : 'Registro guardado');
   closeModal();
   if(type==='general') loadGeneral();
+  else if(type==='bodega_primavera') loadBodegaPrimavera();
   else if(type==='gestion_activos'||type==='gestion_inactivos') loadGestion();
   else if(type==='presidencia') loadPresidencia();
   else if(type==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
+  else if(type==='iron_carpetas'||type==='iron_cajas') loadIronMountain();
   else if(type==='prestamo') { loadPrestamos(); loadDashboard(); }
 }
 
 async function editRecord(type, id) {
-  const tableMap = { general:'archivo_general', gestion_activos:'personal_activo', gestion_inactivos:'personal_inactivo', presidencia:'presidencia', radicados:'radicados' };
+  const tableMap = { general:'archivo_general', bodega_primavera:'bodega_primavera', gestion_activos:'personal_activo', gestion_inactivos:'personal_inactivo', presidencia:'presidencia', radicados:'radicados', iron_carpetas:'iron_mountain_carpetas', iron_cajas:'iron_mountain_cajas' };
   const { data, error } = await sb.from(tableMap[type]).select('*').eq('id', id).single();
   if(error || !data) { toast('Error al cargar el registro', 'error'); return; }
   if(type==='gestion_activos') gestionTab='activos';
@@ -225,12 +255,13 @@ async function deleteRecord(table, id, section) {
   if(error) { toast('Error al eliminar', 'error'); return; }
   toast('Registro eliminado');
   if(section==='general') loadGeneral();
+  else if(section==='bodega_primavera') loadBodegaPrimavera();
   else if(section==='gestion') loadGestion();
   else if(section==='presidencia') loadPresidencia();
   else if(section==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
+  else if(section==='iron_mountain') loadIronMountain();
   else if(section==='prestamos') { loadPrestamos(); loadDashboard(); }
 }
 
 function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingId=null; uploadedFotoUrl=null; bajaRecordData=null; document.getElementById('btn-save').innerHTML = '<i class="ti ti-check"></i> Guardar'; }
 function closeModalOutside(e) { if(e.target===document.getElementById('modal-overlay')) closeModal(); }
-
