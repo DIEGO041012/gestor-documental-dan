@@ -65,3 +65,38 @@ function parseExcelDate(v) {
 function getField(row, ...keys) {
   return keys.map(k => row[k]).find(v => v !== undefined && v !== null);
 }
+
+// Devuelve solamente los registros que todavía no existen. La identidad se
+// construye con campos de negocio (no con el id interno de Supabase), y también
+// elimina repetidos dentro del mismo archivo Excel.
+function importRecordKey(record, fields) {
+  return fields.map(field => String(record[field] ?? '').trim().toLowerCase()).join('\u001f');
+}
+
+async function filterNewImportRecords(table, records, identityFields) {
+  const existingKeys = new Set();
+  const pageSize = 1000;
+
+  for(let from = 0; ; from += pageSize) {
+    const {data, error} = await sb.from(table)
+      .select(identityFields.join(','))
+      .order('id', {ascending:true})
+      .range(from, from + pageSize - 1);
+    if(error) throw error;
+    (data || []).forEach(row => existingKeys.add(importRecordKey(row, identityFields)));
+    if(!data || data.length < pageSize) break;
+  }
+
+  const newRecords = [];
+  let skipped = 0;
+  records.forEach(record => {
+    const key = importRecordKey(record, identityFields);
+    if(existingKeys.has(key)) {
+      skipped++;
+      return;
+    }
+    existingKeys.add(key);
+    newRecords.push(record);
+  });
+  return {newRecords, skipped};
+}

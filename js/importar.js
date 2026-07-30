@@ -144,9 +144,15 @@ async function confirmImport() {
     toast(`${invalidStart.length} registro(s) sin fecha de inicio válida (filas: ${rowIndexes}), revisa el archivo`, 'error');
     return;
   }
-  const { error } = await sb.from(table).insert(records);
+  let filtered;
+  try {
+    filtered = await filterNewImportRecords(table, records, ['cedula']);
+  } catch(error) { toast('Error al comprobar registros existentes: ' + error.message, 'error'); return; }
+  const {newRecords, skipped} = filtered;
+  if(!newRecords.length) { toast(`No había registros nuevos · ${skipped} ya existían`); return; }
+  const { error } = await sb.from(table).insert(newRecords);
   if(error) { toast('Error al importar: ' + error.message, 'error'); return; }
-  toast(`${records.length} registros importados`);
+  toast(`${newRecords.length} nuevos importados · ${skipped} existentes sin cambios`);
   closeImport();
   setGestionTab(importTab);
 }
@@ -164,4 +170,3 @@ function downloadTemplate() {
   }
   toast('Plantilla descargada');
 }
-

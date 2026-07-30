@@ -128,8 +128,16 @@ function showImportPreviewRadicados(rows) {
 }
 
 async function confirmImportRadicados() {
-  const records = importRowsRadicados;
+  let records = importRowsRadicados;
   if(!records.length) { toast('No hay filas para importar', 'error'); return; }
+
+  let skipped = 0;
+  try {
+    const filtered = await filterNewImportRecords('radicados', records, ['consecutivo','fecha_recibido','documento']);
+    records = filtered.newRecords;
+    skipped = filtered.skipped;
+  } catch(error) { toast('Error al comprobar radicados existentes: ' + error.message, 'error'); return; }
+  if(!records.length) { toast(`No había radicados nuevos · ${skipped} ya existían`); return; }
 
   document.getElementById('btn-import-radicados-confirm').disabled = true;
   document.getElementById('btn-import-radicados-confirm').style.opacity = '0.6';
@@ -152,8 +160,8 @@ async function confirmImportRadicados() {
   document.getElementById('btn-import-radicados-confirm').disabled = false;
   document.getElementById('btn-import-radicados-confirm').style.opacity = '1';
 
-  if(failed > 0) toast(`${done.toLocaleString('es-CO')} importados, ${failed.toLocaleString('es-CO')} fallaron — revisa la consola`, 'error');
-  else toast(`${done.toLocaleString('es-CO')} radicados importados`);
+  if(failed > 0) toast(`${done.toLocaleString('es-CO')} nuevos, ${skipped.toLocaleString('es-CO')} existentes, ${failed.toLocaleString('es-CO')} fallaron`, 'error');
+  else toast(`${done.toLocaleString('es-CO')} nuevos importados · ${skipped.toLocaleString('es-CO')} existentes sin cambios`);
 
   closeImportRadicados();
   radicadosPage = 0;

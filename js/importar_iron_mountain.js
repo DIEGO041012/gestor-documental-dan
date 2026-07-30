@@ -44,27 +44,32 @@ function handleFileImportIronMountain(event) {
 }
 
 async function confirmImportIronMountain() {
-  const total = importIronCarpetas.length + importIronCajas.length;
-  if(!total) return;
+  const selectedTotal = importIronCarpetas.length + importIronCajas.length;
+  if(!selectedTotal) return;
   const btn = document.getElementById('btn-import-iron-confirm');
   const progress = document.getElementById('import-progress-iron');
   const fill = document.getElementById('import-progress-iron-fill');
   const count = document.getElementById('import-progress-iron-count');
   btn.disabled = true;
   progress.style.display = 'block';
-  let done = 0;
+  let done = 0, skipped = 0;
   try {
-    for(const [table, rows, conflict] of [['iron_mountain_cajas', importIronCajas, 'caja'], ['iron_mountain_carpetas', importIronCarpetas, 'carpeta']]) {
+    const cajas = await filterNewImportRecords('iron_mountain_cajas', importIronCajas, ['caja']);
+    const carpetas = await filterNewImportRecords('iron_mountain_carpetas', importIronCarpetas, ['carpeta']);
+    skipped = cajas.skipped + carpetas.skipped;
+    const total = cajas.newRecords.length + carpetas.newRecords.length;
+    if(!total) { toast(`No había registros nuevos · ${skipped.toLocaleString('es-CO')} ya existían`); return; }
+    for(const [table, rows, conflict] of [['iron_mountain_cajas', cajas.newRecords, 'caja'], ['iron_mountain_carpetas', carpetas.newRecords, 'carpeta']]) {
       for(let i=0; i<rows.length; i+=500) {
         const batch = rows.slice(i, i+500);
-        const {error} = await sb.from(table).upsert(batch, {onConflict:conflict});
+        const {error} = await sb.from(table).upsert(batch, {onConflict:conflict, ignoreDuplicates:true});
         if(error) throw error;
         done += batch.length;
         count.textContent = `${done.toLocaleString('es-CO')} / ${total.toLocaleString('es-CO')}`;
         fill.style.width = `${Math.round(done/total*100)}%`;
       }
     }
-    toast(`${done.toLocaleString('es-CO')} registros de Iron Mountain importados`);
+    toast(`${done.toLocaleString('es-CO')} nuevos importados · ${skipped.toLocaleString('es-CO')} existentes sin cambios`);
     closeImportIronMountainModal();
     ironMountainPage = 0;
     loadIronMountain();

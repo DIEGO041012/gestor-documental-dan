@@ -107,9 +107,18 @@ async function confirmImportPresidencia() {
       contenido: r['Contenido'] ? String(r['Contenido']).trim() : null
     }));
   if(!records.length) { toast('No hay filas válidas para importar', 'error'); return; }
-  const { error } = await sb.from('presidencia').insert(records);
+  let filtered;
+  try {
+    // En una misma ubicación y bajo el mismo resumen puede haber muchos
+    // documentos distintos. Tipo, fecha y contenido también forman parte de
+    // la identidad para no descartar esos documentos como si fueran repetidos.
+    filtered = await filterNewImportRecords('presidencia', records, ['estante','seccion','modulo','resumen','tipo','fecha','contenido']);
+  } catch(error) { toast('Error al comprobar documentos existentes: ' + error.message, 'error'); return; }
+  const {newRecords, skipped} = filtered;
+  if(!newRecords.length) { toast(`No había documentos nuevos · ${skipped} ya existían`); return; }
+  const { error } = await sb.from('presidencia').insert(newRecords);
   if(error) { toast('Error al importar: ' + error.message, 'error'); return; }
-  toast(`${records.length} documentos importados a Presidencia`);
+  toast(`${newRecords.length} nuevos importados · ${skipped} existentes sin cambios`);
   closeImportPresidencia();
   loadPresidencia();
   populateSeccionFilter();

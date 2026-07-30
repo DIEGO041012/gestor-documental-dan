@@ -431,7 +431,7 @@
   <div class="modal">
     <div class="modal-header"><h3>Importar inventario Iron Mountain</h3><button class="modal-close" onclick="closeImportIronMountainModal()"><i class="ti ti-x"></i></button></div>
     <div class="modal-body">
-      <div class="info-box">Se leerán las hojas <strong>CARPETAS</strong> y <strong>CAJAS</strong>. Los registros repetidos se actualizarán por su código principal.</div>
+      <div class="info-box">Se leerán las hojas <strong>CARPETAS</strong> y <strong>CAJAS</strong>. Los registros que ya existan conservarán sus datos; solo se agregarán los nuevos.</div>
       <div class="import-zone" onclick="document.getElementById('file-input-iron').click()"><i class="ti ti-upload"></i><div style="font-size:14px;font-weight:500;margin-bottom:4px">Selecciona el inventario de Iron Mountain</div><span>Formatos soportados: .xlsx, .xls</span></div>
       <input type="file" id="file-input-iron" accept=".xlsx,.xls" style="display:none" onchange="handleFileImportIronMountain(event)">
       <div id="import-preview-iron" style="display:none;margin-top:1rem"></div>
