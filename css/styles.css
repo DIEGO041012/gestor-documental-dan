@@ -300,7 +300,24 @@ tr:hover td { background: var(--accent-bg) !important; }
 @media print {
   body * { visibility: hidden !important; }
   #recepcion-contabilidad-print, #recepcion-contabilidad-print * { visibility: visible !important; }
-  #recepcion-contabilidad-print { position: absolute; left: 0; top: 0; width: 100%; }
+  #recepcion-contabilidad-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 10px;
+  }
+  .print-header { gap: 0.7rem; margin-bottom: 0.6rem; }
+  .print-logo { padding: 0.45rem 0.7rem; font-size: 13px; }
+  .print-title { font-size: 11px; letter-spacing: 0.4px; }
+  .print-meta { font-size: 10px; gap: 2px; }
+  .print-subtitle { font-size: 10px; margin-bottom: 0.6rem; }
+  .print-table { font-size: 9px; }
+  .print-table th, .print-table td { padding: 6px 7px; }
+  .print-table th { font-size: 8px; }
+  .print-footer { margin-top: 0.6rem; font-size: 10px; }
+  .print-action { display: none !important; }
 }
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
   outline: none; border-color: var(--accent-light); box-shadow: 0 0 0 3px var(--accent-bg);

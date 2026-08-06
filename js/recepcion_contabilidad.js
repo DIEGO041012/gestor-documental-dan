@@ -95,8 +95,9 @@ function generateRecepcionContabilidadPreview() {
         <div class="print-logo">DAN</div>
         <div class="print-title">CONTROL DE ENTREGA DE DOCUMENTOS A CONTABILIDAD</div>
         <div class="print-meta">
-          <div><strong>Código:</strong> P4_042_R01</div>
+          <div><strong>Código:</strong> P4_42_R01</div>
           <div><strong>Versión:</strong> 01</div>
+          <div><strong>Fecha:</strong> 29/06/2022</div>
         </div>
       </div>
       <div class="print-subtitle">Registro de entrega de documentos con fecha de entrega ${fechaEntregaText}</div>
