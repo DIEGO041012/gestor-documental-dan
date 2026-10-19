@@ -15,7 +15,7 @@ function radicadosBuildQuery(forCount) {
 
 async function loadRadicados() {
   const tb = document.getElementById('table-radicados');
-  tb.innerHTML = `<tr><td colspan="11"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr>`;
+  tb.innerHTML = skeletonRows(11);
 
   const { count } = await radicadosBuildQuery(true);
   radicadosTotal = count || 0;
@@ -34,16 +34,20 @@ async function loadRadicados() {
 
   tb.innerHTML = data.map((r,i) => `<tr>
     <td>${from+i+1}</td>
-    <td><span class="mono">${r.consecutivo||'-'}</span></td>
-    <td><span class="mono">${r.fecha_recibido||'-'}</span></td>
-    <td><span class="mono">${r.hora_recibido||'-'}</span></td>
-    <td style="max-width:220px">${r.documento||'-'}</td>
-    <td>${r.tipo ? `<span class="badge badge-blue">${r.tipo}</span>` : '-'}</td>
-    <td>${r.remitente||'-'}</td>
-    <td>${r.area||'-'}</td>
-    <td>${r.destinatario||'-'}</td>
-    <td>${r.responsable_recibe||'-'}</td>
-    <td><button class="btn btn-edit" onclick="editRecord('radicados','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('radicados','${r.id}','radicados')">Eliminar</button></td>
+    <td><span class="mono">${escapeHtml(r.consecutivo||'-')}</span></td>
+    <td><span class="mono">${escapeHtml(r.fecha_recibido||'-')}</span></td>
+    <td><span class="mono">${escapeHtml(r.hora_recibido||'-')}</span></td>
+    <td style="max-width:220px">${escapeHtml(r.documento||'-')}</td>
+    <td>${r.tipo ? `<span class="badge badge-blue">${escapeHtml(r.tipo)}</span>` : '-'}</td>
+    <td>${escapeHtml(r.remitente||'-')}</td>
+    <td>${escapeHtml(r.area||'-')}</td>
+    <td>${escapeHtml(r.destinatario||'-')}</td>
+    <td>${escapeHtml(r.responsable_recibe||'-')}</td>
+    <td>${rowActions([
+      {label:'Editar', icon:'edit', onclick:`editRecord('radicados','${r.id}')`},
+      {separator:true},
+      {label:'Eliminar', icon:'trash', danger:true, onclick:`deleteRecord('radicados','${r.id}','radicados',${jsArg('Radicado '+(r.consecutivo||''))})`}
+    ])}</td>
   </tr>`).join('');
 
   const showingFrom = radicadosTotal === 0 ? 0 : from + 1;
@@ -68,5 +72,5 @@ async function populateRadicadosFilters() {
   const areas = [...new Set(data.map(r=>r.area).filter(Boolean))].sort();
   const sel = document.getElementById('filter-radicados-area');
   const cur = sel.value;
-  sel.innerHTML = '<option value="">Todas las áreas</option>' + areas.map(a=>`<option value="${a}" ${a===cur?'selected':''}>${a}</option>`).join('');
+  sel.innerHTML = '<option value="">Todas las áreas</option>' + areas.map(a=>`<option value="${escapeHtml(a)}" ${a===cur?'selected':''}>${escapeHtml(a)}</option>`).join('');
 }

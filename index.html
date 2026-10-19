@@ -7,11 +7,11 @@
 <link rel="icon" type="image/png" href="assets/logo-dan.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.49.0/dist/tabler-icons.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/styles.css?v=2.3">
 </head>
 <body>
 
@@ -48,25 +48,26 @@
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Principal</div>
-      <a class="nav-item active" data-mod="dashboard" onclick="showSection('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+      <a class="nav-item active" data-mod="dashboard" onclick="showSection('dashboard')" title="Dashboard"><i class="ti ti-layout-dashboard"></i><span class="nav-label">Dashboard</span></a>
       <div class="nav-section">Archivos</div>
-      <a class="nav-item" data-mod="general" onclick="showSection('general')"><i class="ti ti-archive"></i> Doc. general</a>
-      <a class="nav-item" data-mod="bodega_primavera" onclick="showSection('bodega_primavera')"><i class="ti ti-building-warehouse"></i> Bodega Primavera</a>
-      <a class="nav-item" data-mod="gestion" onclick="showSection('gestion')"><i class="ti ti-users"></i> Gestión humana</a>
-      <a class="nav-item" data-mod="presidencia" onclick="showSection('presidencia')"><i class="ti ti-building"></i> Presidencia</a>
-      <a class="nav-item" data-mod="radicados" onclick="showSection('radicados')"><i class="ti ti-mail"></i> Radicados</a>
-      <a class="nav-item" data-mod="envios" onclick="showSection('envios')"><i class="ti ti-truck-delivery"></i> Envíos</a>
-      <a class="nav-item" data-mod="recepcion_contabilidad" onclick="showSection('recepcion_contabilidad')"><i class="ti ti-file-text"></i> Recepción contabilidad</a>
-      <a class="nav-item" data-mod="iron_mountain" onclick="showSection('iron_mountain')"><i class="ti ti-building-warehouse"></i> Registros Iron Mountain</a>
+      <a class="nav-item" data-mod="general" onclick="showSection('general')" title="Doc. general"><i class="ti ti-archive"></i><span class="nav-label">Doc. general</span></a>
+      <a class="nav-item" data-mod="bodega_primavera" onclick="showSection('bodega_primavera')" title="Bodega Primavera"><i class="ti ti-building-warehouse"></i><span class="nav-label">Bodega Primavera</span></a>
+      <a class="nav-item" data-mod="gestion" onclick="showSection('gestion')" title="Gestión humana"><i class="ti ti-users"></i><span class="nav-label">Gestión humana</span></a>
+      <a class="nav-item" data-mod="presidencia" onclick="showSection('presidencia')" title="Presidencia"><i class="ti ti-building"></i><span class="nav-label">Presidencia</span></a>
+      <a class="nav-item" data-mod="radicados" onclick="showSection('radicados')" title="Radicados"><i class="ti ti-mail"></i><span class="nav-label">Radicados</span></a>
+      <a class="nav-item" data-mod="envios" onclick="showSection('envios')" title="Envíos"><i class="ti ti-truck-delivery"></i><span class="nav-label">Envíos</span></a>
+      <a class="nav-item" data-mod="recepcion_contabilidad" onclick="showSection('recepcion_contabilidad')" title="Recepción contabilidad"><i class="ti ti-file-text"></i><span class="nav-label">Recepción contabilidad</span></a>
+      <a class="nav-item" data-mod="iron_mountain" onclick="showSection('iron_mountain')" title="Registros Iron Mountain"><i class="ti ti-building-warehouse"></i><span class="nav-label">Registros Iron Mountain</span></a>
       <div class="nav-section">Gestión</div>
-      <a class="nav-item" data-mod="prestamos" onclick="showSection('prestamos')"><i class="ti ti-arrow-right-left"></i> Préstamos</a>
-      <a class="nav-item" data-mod="tareas" onclick="showSection('tareas')"><i class="ti ti-layout-kanban"></i> Tareas y citas</a>
-      <a class="nav-item" data-mod="reportes" onclick="showSection('reportes')"><i class="ti ti-chart-bar"></i> Reportes</a>
+      <a class="nav-item" data-mod="prestamos" onclick="showSection('prestamos')" title="Préstamos"><i class="ti ti-arrows-left-right"></i><span class="nav-label">Préstamos</span></a>
+      <a class="nav-item" data-mod="tareas" onclick="showSection('tareas')" title="Tareas y citas"><i class="ti ti-layout-kanban"></i><span class="nav-label">Tareas y citas</span></a>
+      <a class="nav-item" data-mod="reportes" onclick="showSection('reportes')" title="Reportes"><i class="ti ti-chart-bar"></i><span class="nav-label">Reportes</span></a>
     </nav>
     <div class="sidebar-footer">
-      <div id="auth-user-email"></div>
-      <button class="btn btn-secondary btn-sm auth-logout" type="button" onclick="signOut()">Cerrar sesión</button>
-      <div>v2.2 · Supabase + Cloudinary</div>
+      <button class="sidebar-collapse-btn" type="button" id="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" aria-label="Contraer menú" title="Contraer menú"><i class="ti ti-layout-sidebar-left-collapse"></i><span class="nav-label">Contraer menú</span></button>
+      <div id="auth-user-email" class="sidebar-footer-meta"></div>
+      <button class="btn btn-secondary btn-sm auth-logout" type="button" onclick="signOut()" title="Cerrar sesión"><i class="ti ti-logout"></i><span class="nav-label">Cerrar sesión</span></button>
+      <div class="sidebar-footer-meta">v2.3 · Supabase + Cloudinary</div>
     </div>
   </aside>
 
@@ -86,8 +87,6 @@
       </div>
     </div>
 
-      <!-- toggle button injected into each .header-actions via JS -->
-
     <!-- DASHBOARD -->
     <div id="section-dashboard" class="section active">
       <div class="page-header">
@@ -99,7 +98,7 @@
         <div class="stat-card"><div class="stat-icon green"><i class="ti ti-users"></i></div><div class="stat-value" id="s-activos">—</div><div class="stat-label">Personal activo</div></div>
         <div class="stat-card"><div class="stat-icon red"><i class="ti ti-user-off"></i></div><div class="stat-value" id="s-inactivos">—</div><div class="stat-label">Personal inactivo</div></div>
         <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-building"></i></div><div class="stat-value" id="s-presidencia">—</div><div class="stat-label">Presidencia</div></div>
-        <div class="stat-card"><div class="stat-icon yellow"><i class="ti ti-arrow-right-left"></i></div><div class="stat-value" id="s-prestamos">—</div><div class="stat-label">Préstamos activos</div></div>
+        <div class="stat-card"><div class="stat-icon yellow"><i class="ti ti-arrows-left-right"></i></div><div class="stat-value" id="s-prestamos">—</div><div class="stat-label">Préstamos activos</div></div>
         <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-mail"></i></div><div class="stat-value" id="s-radicados">—</div><div class="stat-label">Radicados</div></div>
       </div>
       <div class="card">
@@ -120,7 +119,7 @@
       </div>
       <div class="card">
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-general" placeholder="Buscar por año, área o contenido..." oninput="loadGeneral()"></div>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-general" placeholder="Buscar por año, área o contenido..." oninput="debounceSearch('general', loadGeneral)"></div>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th>#</th><th>Año(s)</th><th>Número caja</th><th>Ubicación</th><th>Mes</th><th>Área</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead>
@@ -141,7 +140,7 @@
         </div>
       </div>
       <div class="card">
-        <div class="search-row"><div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-bodega-primavera" placeholder="Buscar por año, caja, ubicación, área o contenido..." oninput="loadBodegaPrimavera()"></div></div>
+        <div class="search-row"><div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-bodega-primavera" placeholder="Buscar por año, caja, ubicación, área o contenido..." oninput="debounceSearch('bodega', loadBodegaPrimavera)"></div></div>
         <div class="table-wrap"><table><thead><tr><th>#</th><th>Año(s)</th><th>Número caja</th><th>Ubicación</th><th>Mes</th><th>Área</th><th>Contenido</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="table-bodega-primavera"><tr><td colspan="9"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table></div>
       </div>
     </div>
@@ -163,10 +162,11 @@
           <button class="tab" onclick="setGestionTab('inactivos')">Personal inactivo</button>
         </div>
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-gestion" placeholder="Buscar por nombre o cédula..." oninput="loadGestion()"></div>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-gestion" placeholder="Buscar por nombre o cédula..." oninput="debounceSearch('gestion', loadGestion)"></div>
         </div>
         <div class="table-wrap" id="table-gestion-wrap">
-          <div class="loading"><i class="ti ti-loader"></i> Cargando...</div>
+          <table><thead><tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Año</th><th>Mes</th><th>Día</th><th>Acciones</th></tr></thead>
+          <tbody><tr><td colspan="8"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
         </div>
       </div>
     </div>
@@ -184,7 +184,7 @@
       </div>
       <div class="card">
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-presidencia" placeholder="Buscar por tema, tipo, módulo o contenido..." oninput="loadPresidencia()"></div>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-presidencia" placeholder="Buscar por tema, tipo, módulo o contenido..." oninput="debounceSearch('presidencia', loadPresidencia)"></div>
           <select class="filter" id="filter-presidencia-seccion" onchange="loadPresidencia()"><option value="">Todas las secciones</option></select>
         </div>
         <div class="table-wrap">
@@ -207,7 +207,7 @@
       </div>
       <div class="card">
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-radicados" placeholder="Buscar por consecutivo, documento, remitente o destinatario..." oninput="radicadosPage=0;loadRadicados()"></div>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-radicados" placeholder="Buscar por consecutivo, documento, remitente o destinatario..." oninput="debounceSearch('radicados', () => { radicadosPage=0; loadRadicados(); })"></div>
           <select class="filter" id="filter-radicados-area" onchange="radicadosPage=0;loadRadicados()"><option value="">Todas las áreas</option></select>
           <select class="filter" id="filter-radicados-tipo" onchange="radicadosPage=0;loadRadicados()">
             <option value="">Todos los tipos</option>
@@ -243,7 +243,7 @@
       </div>
       <div class="card">
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="search" id="search-envios" placeholder="Buscar por guía, destinatario, ciudad o remitente..." oninput="shipmentPage=0;loadShipments()"></div>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="search" id="search-envios" placeholder="Buscar por guía, destinatario, ciudad o remitente..." oninput="debounceSearch('envios', () => { shipmentPage=0; loadShipments(); })"></div>
           <select class="filter" id="filter-envios-status" onchange="shipmentPage=0;loadShipments()">
             <option value="">Todos los estados</option>
             <option value="programado">Programado</option>
@@ -305,7 +305,7 @@
           <button class="tab" id="iron-tab-cajas" onclick="setIronMountainTab('cajas')">Cajas</button>
         </div>
         <div class="search-row">
-          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-iron-mountain" placeholder="Buscar por código, caja, descripción o estado..." oninput="ironMountainPage=0;loadIronMountain()"></div>
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-iron-mountain" placeholder="Buscar por código, caja, descripción o estado..." oninput="debounceSearch('iron', () => { ironMountainPage=0; loadIronMountain(); })"></div>
           <select class="filter" id="filter-iron-estado" onchange="ironMountainPage=0;loadIronMountain()"><option value="">Todos los estados</option><option value="EN CUSTODIA">En custodia</option><option value="EN PRESTAMO">En préstamo</option></select>
         </div>
         <div class="table-wrap" id="table-iron-mountain-wrap"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></div>
@@ -560,31 +560,32 @@
   </div>
 </div>
 
-<div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
+<div class="toast-stack" id="toast-stack" aria-live="polite"></div>
 
 <!-- ═══ SCRIPTS: el orden importa (config y utils van primero) ═══ -->
-<script src="js/config.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/navegacion.js"></script>
-<script src="js/dashboard.js"></script>
-<script src="js/general.js"></script>
-<script src="js/bodega_primavera.js"></script>
-<script src="js/gestion.js"></script>
-<script src="js/presidencia.js"></script>
-<script src="js/radicados.js"></script>
-<script src="js/envios.js"></script>
-<script src="js/prestamos.js"></script>
-<script src="js/tareas.js"></script>
-<script src="js/reportes.js"></script>
-<script src="js/modal.js"></script>
-<script src="js/importar.js"></script>
-<script src="js/importar_presidencia.js"></script>
-<script src="js/importar_radicados.js"></script>
-<script src="js/iron_mountain.js"></script>
-<script src="js/importar_iron_mountain.js"></script>
-<script src="js/exportar.js"></script>
-<script src="js/recepcion_contabilidad.js"></script>
-<script src="js/init.js"></script>
+<script src="js/config.js?v=2.3"></script>
+<script src="js/utils.js?v=2.3"></script>
+<script src="js/ui.js?v=2.3"></script>
+<script src="js/auth.js?v=2.3"></script>
+<script src="js/navegacion.js?v=2.3"></script>
+<script src="js/dashboard.js?v=2.3"></script>
+<script src="js/general.js?v=2.3"></script>
+<script src="js/bodega_primavera.js?v=2.3"></script>
+<script src="js/gestion.js?v=2.3"></script>
+<script src="js/presidencia.js?v=2.3"></script>
+<script src="js/radicados.js?v=2.3"></script>
+<script src="js/envios.js?v=2.3"></script>
+<script src="js/prestamos.js?v=2.3"></script>
+<script src="js/tareas.js?v=2.3"></script>
+<script src="js/reportes.js?v=2.3"></script>
+<script src="js/modal.js?v=2.3"></script>
+<script src="js/importar.js?v=2.3"></script>
+<script src="js/importar_presidencia.js?v=2.3"></script>
+<script src="js/importar_radicados.js?v=2.3"></script>
+<script src="js/iron_mountain.js?v=2.3"></script>
+<script src="js/importar_iron_mountain.js?v=2.3"></script>
+<script src="js/exportar.js?v=2.3"></script>
+<script src="js/recepcion_contabilidad.js?v=2.3"></script>
+<script src="js/init.js?v=2.3"></script>
 </body>
 </html>

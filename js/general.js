@@ -12,13 +12,18 @@ async function loadGeneral() {
   }
   tb.innerHTML = data.map((r,i) => `<tr>
     <td>${i+1}</td>
-    <td><span class="mono">${r.año||'-'}</span></td>
-    <td>${r.numero_caja||'-'}</td>
-    <td>${r.ubicacion||'-'}</td>
-    <td>${r.mes ? (MESES[r.mes-1]||r.mes) : '-'}</td>
-    <td>${r.area||'-'}</td>
-    <td style="max-width:200px">${r.contenido||'-'}</td>
-    <td>${r.estado ? `<span class="badge ${r.estado==='Disponible'?'badge-ok':r.estado==='Prestado'?'badge-warn':'badge-blue'}">${r.estado}</span>` : '-'}</td>
-    <td><button class="btn btn-warning" onclick="openGeneralTransfer('${r.id}')"><i class="ti ti-truck-delivery"></i> Trasladar</button><button class="btn btn-edit" onclick="editRecord('general','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('archivo_general','${r.id}','general')">Eliminar</button></td>
+    <td><span class="mono">${escapeHtml(r.año||'-')}</span></td>
+    <td>${escapeHtml(r.numero_caja||'-')}</td>
+    <td>${escapeHtml(r.ubicacion||'-')}</td>
+    <td>${r.mes ? (MESES[r.mes-1]||escapeHtml(r.mes)) : '-'}</td>
+    <td>${escapeHtml(r.area||'-')}</td>
+    <td style="max-width:200px">${escapeHtml(r.contenido||'-')}</td>
+    <td>${r.estado ? `<span class="badge ${r.estado==='Disponible'?'badge-ok':r.estado==='Prestado'?'badge-warn':'badge-blue'}">${escapeHtml(r.estado)}</span>` : '-'}</td>
+    <td>${rowActions([
+      {label:'Editar', icon:'edit', onclick:`editRecord('general','${r.id}')`},
+      {label:'Trasladar', icon:'truck-delivery', onclick:`openGeneralTransfer('${r.id}')`},
+      {separator:true},
+      {label:'Eliminar', icon:'trash', danger:true, onclick:`deleteRecord('archivo_general','${r.id}','general',${jsArg('Caja '+(r.numero_caja||'sin número'))})`}
+    ])}</td>
   </tr>`).join('');
 }

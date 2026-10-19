@@ -2,6 +2,7 @@
 function setGestionTab(tab) {
   gestionTab = tab;
   document.querySelectorAll('.tabs .tab').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='activos')||(i===1&&tab==='inactivos')));
+  document.getElementById('table-gestion-wrap').innerHTML = skeletonTable(8);
   loadGestion();
 }
 
@@ -20,13 +21,20 @@ async function loadGestion() {
     ? `<tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Año</th><th>Mes</th><th>Día</th><th>Acciones</th></tr>`
     : `<tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Fecha inicio</th><th>Fecha final</th><th>Ubicación</th><th>Acciones</th></tr>`;
   const tbody = data.map((r,i) => {
-    const foto = r.foto_url ? `<img src="${r.foto_url}" class="foto-preview" style="width:30px;height:30px">` : `<div class="avatar">${r.nombre.charAt(0)}</div>`;
+    const nombre = escapeHtml(r.nombre);
+    const foto = r.foto_url ? `<img src="${escapeHtml(r.foto_url)}" class="foto-preview" style="width:30px;height:30px" alt="">` : `<div class="avatar">${escapeHtml((r.nombre||'?').charAt(0))}</div>`;
     const dbTable = gestionTab === 'activos' ? 'personal_activo' : 'personal_inactivo';
     const editType = gestionTab === 'activos' ? 'gestion_activos' : 'gestion_inactivos';
+    const actions = rowActions([
+      {label:'Editar', icon:'edit', onclick:`editRecord('${editType}','${r.id}')`},
+      ...(gestionTab === 'activos' ? [{label:'Dar de baja', icon:'user-x', onclick:`openBajaModal('${r.id}')`}] : []),
+      {separator:true},
+      {label:'Eliminar', icon:'trash', danger:true, onclick:`deleteRecord('${dbTable}','${r.id}','gestion',${jsArg(r.nombre)})`}
+    ]);
     if(gestionTab === 'activos') {
-      return `<tr><td>${i+1}</td><td>${foto}</td><td>${r.nombre}</td><td><span class="mono">${r.cedula}</span></td><td><span class="mono">${r.año}</span></td><td>${MESES[r.mes-1]||r.mes}</td><td><span class="mono">${r.dia}</span></td><td><button class="btn btn-warning" onclick="openBajaModal('${r.id}')" title="Mover a Personal inactivo"><i class="ti ti-user-x"></i> Dar de baja</button><button class="btn btn-edit" onclick="editRecord('${editType}','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('${dbTable}','${r.id}','gestion')">Eliminar</button></td></tr>`;
+      return `<tr><td>${i+1}</td><td>${foto}</td><td>${nombre}</td><td><span class="mono">${escapeHtml(r.cedula)}</span></td><td><span class="mono">${escapeHtml(r.año)}</span></td><td>${MESES[r.mes-1]||escapeHtml(r.mes)}</td><td><span class="mono">${escapeHtml(r.dia)}</span></td><td>${actions}</td></tr>`;
     } else {
-      return `<tr><td>${i+1}</td><td>${foto}</td><td>${r.nombre}</td><td><span class="mono">${r.cedula}</span></td><td><span class="mono">${r.fecha_inicio}</span></td><td><span class="mono">${r.fecha_final||'-'}</span></td><td><span class="mono">${r.ubicacion||'-'}</span></td><td><button class="btn btn-edit" onclick="editRecord('${editType}','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('${dbTable}','${r.id}','gestion')">Eliminar</button></td></tr>`;
+      return `<tr><td>${i+1}</td><td>${foto}</td><td>${nombre}</td><td><span class="mono">${escapeHtml(r.cedula)}</span></td><td><span class="mono">${escapeHtml(r.fecha_inicio)}</span></td><td><span class="mono">${escapeHtml(r.fecha_final||'-')}</span></td><td><span class="mono">${escapeHtml(r.ubicacion||'-')}</span></td><td>${actions}</td></tr>`;
     }
   }).join('');
   wrap.innerHTML = `<div class="table-wrap"><table><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;

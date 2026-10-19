@@ -54,7 +54,7 @@ function shipmentLocalDateTime(date) {
 async function loadShipments() {
   const requestSequence = ++shipmentLoadSequence;
   const table = document.getElementById('table-envios');
-  table.innerHTML = '<tr><td colspan="6"><div class="loading"><i class="ti ti-loader"></i> Cargando envíos...</div></td></tr>';
+  table.innerHTML = skeletonRows(6);
 
   let query = sb.from('shipments').select('*', {count:'exact'}).order('scheduled_pickup_at', {ascending:false});
   const status = document.getElementById('filter-envios-status').value;

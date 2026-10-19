@@ -16,14 +16,18 @@ async function loadPresidencia() {
   }
   tb.innerHTML = data.map((r,i) => `<tr>
     <td>${i+1}</td>
-    <td><span class="mono">${r.estante ?? '-'}</span></td>
-    <td><span class="badge badge-blue">${r.seccion || '-'}</span></td>
-    <td><span class="mono">${r.modulo || '-'}</span></td>
-    <td>${r.resumen || '-'}</td>
-    <td>${r.tipo ? r.tipo.trim() : '-'}</td>
-    <td><span class="mono">${r.fecha || '-'}</span></td>
-    <td style="max-width:220px">${r.contenido || '-'}</td>
-    <td><button class="btn btn-edit" onclick="editRecord('presidencia','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('presidencia','${r.id}','presidencia')">Eliminar</button></td>
+    <td><span class="mono">${escapeHtml(r.estante ?? '-')}</span></td>
+    <td><span class="badge badge-blue">${escapeHtml(r.seccion || '-')}</span></td>
+    <td><span class="mono">${escapeHtml(r.modulo || '-')}</span></td>
+    <td>${escapeHtml(r.resumen || '-')}</td>
+    <td>${r.tipo ? escapeHtml(r.tipo.trim()) : '-'}</td>
+    <td><span class="mono">${escapeHtml(r.fecha || '-')}</span></td>
+    <td style="max-width:220px">${escapeHtml(r.contenido || '-')}</td>
+    <td>${rowActions([
+      {label:'Editar', icon:'edit', onclick:`editRecord('presidencia','${r.id}')`},
+      {separator:true},
+      {label:'Eliminar', icon:'trash', danger:true, onclick:`deleteRecord('presidencia','${r.id}','presidencia',${jsArg(r.resumen || 'documento')})`}
+    ])}</td>
   </tr>`).join('');
 }
 
@@ -33,5 +37,5 @@ async function populateSeccionFilter() {
   const secciones = [...new Set(data.map(r=>r.seccion).filter(Boolean))].sort();
   const sel = document.getElementById('filter-presidencia-seccion');
   const cur = sel.value;
-  sel.innerHTML = '<option value="">Todas las secciones</option>' + secciones.map(s=>`<option value="${s}" ${s===cur?'selected':''}>Sección ${s}</option>`).join('');
+  sel.innerHTML = '<option value="">Todas las secciones</option>' + secciones.map(s=>`<option value="${escapeHtml(s)}" ${s===cur?'selected':''}>Sección ${escapeHtml(s)}</option>`).join('');
 }

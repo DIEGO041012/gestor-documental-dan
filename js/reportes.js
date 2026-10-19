@@ -84,7 +84,7 @@ async function loadReportes() {
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-files"></i></div><div class="stat-value">${total.toLocaleString('es-CO')}</div><div class="stat-label">Total documentos</div></div>
       <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-mail"></i></div><div class="stat-value">${(rad.count||0).toLocaleString('es-CO')}</div><div class="stat-label">Radicados</div></div>
-      <div class="stat-card"><div class="stat-icon yellow"><i class="ti ti-arrow-right-left"></i></div><div class="stat-value">${pr.count||0}</div><div class="stat-label">Préstamos activos</div></div>
+      <div class="stat-card"><div class="stat-icon yellow"><i class="ti ti-arrows-left-right"></i></div><div class="stat-value">${pr.count||0}</div><div class="stat-label">Préstamos activos</div></div>
       <div class="stat-card"><div class="stat-icon green"><i class="ti ti-check"></i></div><div class="stat-value">${prv.count||0}</div><div class="stat-label">Préstamos devueltos</div></div>
       <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-users"></i></div><div class="stat-value">${a.count||0}</div><div class="stat-label">Personal activo</div></div>
       <div class="stat-card"><div class="stat-icon yellow"><i class="ti ti-building-warehouse"></i></div><div class="stat-value">${ironTotal.toLocaleString('es-CO')}</div><div class="stat-label">Registros Iron Mountain</div></div>

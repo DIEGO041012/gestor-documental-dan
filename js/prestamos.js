@@ -3,7 +3,7 @@ async function loadPrestamos() {
   const { data, error } = await sb.from('prestamos').select('*').order('created_at', {ascending:false});
   const el = document.getElementById('loans-list');
   if(error || !data || data.length === 0) {
-    el.innerHTML = `<div class="empty"><i class="ti ti-arrow-right-left"></i><p>No hay préstamos registrados.</p></div>`;
+    el.innerHTML = `<div class="empty"><i class="ti ti-arrows-left-right"></i><p>No hay préstamos registrados.</p></div>`;
     return;
   }
   const hoy = new Date();
@@ -12,14 +12,14 @@ async function loadPrestamos() {
     const badge = p.estado === 'activo' ? `<span class="badge ${venc?'badge-danger':'badge-warn'}">${venc?'Vencido':'Activo'}</span>` : '<span class="badge badge-ok">Devuelto</span>';
     return `<div class="loan-card ${venc?'overdue':''}">
       <div style="flex:1">
-        <div class="loan-title">${p.documento}</div>
-        <div class="loan-meta">Solicitante: <strong>${p.solicitante}</strong> · ${p.archivo}<br>Salida: <span class="mono">${p.fecha_salida}</span> · Devolución esperada: <span class="mono">${p.fecha_devolucion}</span></div>
-        ${p.observaciones?`<div class="loan-meta" style="margin-top:4px">Obs: ${p.observaciones}</div>`:''}
+        <div class="loan-title">${escapeHtml(p.documento)}</div>
+        <div class="loan-meta">Solicitante: <strong>${escapeHtml(p.solicitante)}</strong> · ${escapeHtml(p.archivo)}<br>Salida: <span class="mono">${escapeHtml(p.fecha_salida)}</span> · Devolución esperada: <span class="mono">${escapeHtml(p.fecha_devolucion)}</span></div>
+        ${p.observaciones?`<div class="loan-meta" style="margin-top:4px">Obs: ${escapeHtml(p.observaciones)}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
         ${badge}
         ${p.estado==='activo'?`<button class="btn btn-success btn-sm" onclick="returnLoan('${p.id}')"><i class="ti ti-check"></i> Devuelto</button>`:''}
-        <button class="btn btn-danger" onclick="deleteRecord('prestamos','${p.id}','prestamos')">Eliminar</button>
+        <button class="btn btn-danger" onclick="deleteRecord('prestamos','${p.id}','prestamos',${jsArg(p.documento)})">Eliminar</button>
       </div>
     </div>`;
   }).join('');

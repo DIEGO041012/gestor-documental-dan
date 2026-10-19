@@ -8,39 +8,33 @@ function closeSidebar() {
   document.getElementById('sidebar-scrim').classList.remove('open');
 }
 
-// Toggle collapsed state for desktop: hides sidebar and expands main view
-function toggleSidebarCollapse() {
+// Escritorio: contrae el menú a una barra de íconos (no lo oculta del todo)
+const SIDEBAR_COLLAPSED_KEY = 'gd-sidebar-collapsed';
+
+function setSidebarCollapsed(collapsed) {
   const layout = document.querySelector('.layout');
   if(!layout) return;
-  layout.classList.toggle('sidebar-collapsed');
-  const collapsed = layout.classList.contains('sidebar-collapsed');
-  // update any inline toggles in headers
-  document.querySelectorAll('.toggle-sidebar-inline').forEach(btn => {
-    const icon = btn.querySelector('i');
-    const txt = btn.querySelector('span');
-    if(txt) txt.textContent = collapsed ? 'Mostrar menú' : 'Ocultar menú';
-    if(icon) icon.className = collapsed ? 'ti ti-layout-sidebar-right' : 'ti ti-layout-sidebar-left';
-  });
+  layout.classList.toggle('sidebar-collapsed', collapsed);
+  const btn = document.getElementById('sidebar-collapse-btn');
+  if(btn) {
+    const label = collapsed ? 'Expandir menú' : 'Contraer menú';
+    btn.setAttribute('aria-label', label);
+    btn.title = label;
+    btn.querySelector('i').className = 'ti ' + (collapsed ? 'ti-layout-sidebar-left-expand' : 'ti-layout-sidebar-left-collapse');
+    btn.querySelector('.nav-label').textContent = label;
+  }
+  try { localStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed ? '1' : '0'); } catch(e) {}
 }
 
-// Inject an inline toggle button into every .header-actions container
-function injectSidebarToggles() {
-  document.querySelectorAll('.header-actions').forEach(h => {
-    if(h.querySelector('.toggle-sidebar-inline')) return; // already
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'toggle-sidebar-inline btn btn-secondary btn-sm';
-    btn.setAttribute('aria-label','Ocultar/Mostrar menú');
-    btn.onclick = toggleSidebarCollapse;
-    btn.innerHTML = '<i class="ti ti-layout-sidebar-left"></i><span>Ocultar menú</span>';
-    h.insertBefore(btn, h.firstChild);
-  });
-  // sync initial state
-  const collapsed = document.querySelector('.layout').classList.contains('sidebar-collapsed');
-  if(collapsed) toggleSidebarCollapse();
+function toggleSidebarCollapse() {
+  setSidebarCollapsed(!document.querySelector('.layout').classList.contains('sidebar-collapsed'));
 }
 
-document.addEventListener('DOMContentLoaded', injectSidebarToggles);
+document.addEventListener('DOMContentLoaded', () => {
+  let saved = false;
+  try { saved = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1'; } catch(e) {}
+  if(saved) setSidebarCollapsed(true);
+});
 
 // ── NAVIGATION ─────────────────────────────────────────────────────────────
 function showSection(s) {

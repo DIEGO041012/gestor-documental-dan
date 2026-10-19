@@ -1,10 +1,6 @@
-// ── TOAST ──────────────────────────────────────────────────────────────────
-function toast(msg, type='ok') {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  t.style.background = type==='error' ? 'var(--danger)' : 'var(--text)';
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+// Escapa texto de la base de datos antes de insertarlo con innerHTML
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 }
 
 function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }

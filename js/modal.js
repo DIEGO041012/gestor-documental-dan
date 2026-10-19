@@ -249,8 +249,14 @@ async function editRecord(type, id) {
   openModal(type, data);
 }
 
-async function deleteRecord(table, id, section) {
-  if(!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.')) return;
+async function deleteRecord(table, id, section, label) {
+  const ok = await confirmDialog({
+    title: '¿Eliminar este registro?',
+    description: (label ? `Se eliminará «${label}». ` : '') + 'Esta acción no se puede deshacer.',
+    confirmLabel: 'Eliminar',
+    danger: true
+  });
+  if(!ok) return;
   const { error } = await sb.from(table).delete().eq('id', id);
   if(error) { toast('Error al eliminar', 'error'); return; }
   toast('Registro eliminado');

@@ -8,7 +8,7 @@ async function loadBodegaPrimavera() {
   const {data,error}=await query;
   const tb=document.getElementById('table-bodega-primavera');
   if(error||!data?.length){tb.innerHTML=`<tr><td colspan="9"><div class="empty"><i class="ti ti-building-warehouse"></i><p>${error?ironEscape(error.message):'Sin registros.'}</p></div></td></tr>`;return;}
-  tb.innerHTML=data.map((r,i)=>`<tr><td>${i+1}</td><td class="mono">${ironEscape(r.año||'-')}</td><td>${ironEscape(r.numero_caja||'-')}</td><td>${ironEscape(r.ubicacion||'-')}</td><td>${r.mes?(MESES[r.mes-1]||r.mes):'-'}</td><td>${ironEscape(r.area||'-')}</td><td style="max-width:200px">${ironEscape(r.contenido||'-')}</td><td>${r.estado?`<span class="badge ${r.estado==='Disponible'?'badge-ok':r.estado==='Prestado'?'badge-warn':'badge-blue'}">${ironEscape(r.estado)}</span>`:'-'}</td><td><button class="btn btn-edit" onclick="editRecord('bodega_primavera','${r.id}')">Editar</button><button class="btn btn-danger" onclick="deleteRecord('bodega_primavera','${r.id}','bodega_primavera')">Eliminar</button></td></tr>`).join('');
+  tb.innerHTML=data.map((r,i)=>`<tr><td>${i+1}</td><td class="mono">${ironEscape(r.año||'-')}</td><td>${ironEscape(r.numero_caja||'-')}</td><td>${ironEscape(r.ubicacion||'-')}</td><td>${r.mes?(MESES[r.mes-1]||r.mes):'-'}</td><td>${ironEscape(r.area||'-')}</td><td style="max-width:200px">${ironEscape(r.contenido||'-')}</td><td>${r.estado?`<span class="badge ${r.estado==='Disponible'?'badge-ok':r.estado==='Prestado'?'badge-warn':'badge-blue'}">${ironEscape(r.estado)}</span>`:'-'}</td><td>${rowActions([{label:'Editar',icon:'edit',onclick:`editRecord('bodega_primavera','${r.id}')`},{separator:true},{label:'Eliminar',icon:'trash',danger:true,onclick:`deleteRecord('bodega_primavera','${r.id}','bodega_primavera',${jsArg('Caja '+(r.numero_caja||'sin número'))})`}])}</td></tr>`).join('');
 }
 
 async function openGeneralTransfer(id) {
@@ -28,7 +28,8 @@ async function confirmGeneralTransfer(){
   const r=transferGeneralRecord,destination=document.getElementById('transfer-destination').value,btn=document.getElementById('btn-transfer-confirm');
   if(!r)return;
   if(destination==='iron_mountain'&&!r.numero_caja){toast('La caja necesita un número para trasladarse a Iron Mountain','error');return;}
-  if(!confirm(`¿Confirmas trasladar la caja a ${destination==='iron_mountain'?'Iron Mountain':'Bodega Primavera'}? Dejará de aparecer en Documentación general.`))return;
+  const destName=destination==='iron_mountain'?'Iron Mountain':'Bodega Primavera';
+  if(!await confirmDialog({title:`¿Trasladar la caja a ${destName}?`,description:`La caja ${r.numero_caja||'sin número'} dejará de aparecer en Documentación general.`,confirmLabel:'Trasladar'}))return;
   btn.disabled=true;
   let targetTable,targetData;
   if(destination==='bodega_primavera'){
