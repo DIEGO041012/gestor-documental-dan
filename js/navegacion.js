@@ -58,6 +58,7 @@ function showSection(s) {
   else if(s==='gestion') loadGestion();
   else if(s==='presidencia') { loadPresidencia(); populateSeccionFilter(); }
   else if(s==='radicados') { radicadosPage = 0; loadRadicados(); populateRadicadosFilters(); }
+  else if(s==='envios') loadShipments();
   else if(s==='iron_mountain') { ironMountainPage = 0; loadIronMountain(); }
   else if(s==='prestamos') loadPrestamos();
   else if(s==='tareas') loadTasksModule();
