@@ -3,6 +3,11 @@ function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 }
 
+// Fecha local de hoy en formato yyyy-mm-dd (toISOString usaría UTC)
+function localDateValue(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+
 function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
 function parseExcelDate(v) {

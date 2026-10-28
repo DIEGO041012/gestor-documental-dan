@@ -122,6 +122,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .nav-item[data-mod="prestamos"] { --nav-accent: #F2A65A; }
 .nav-item[data-mod="tareas"] { --nav-accent: #FB7185; }
 .nav-item[data-mod="reportes"] { --nav-accent: #94A3B8; }
+.nav-item[data-mod="destruccion"] { --nav-accent: #F87171; }
 
 .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: rgba(255,255,255,0.28); font-family: var(--font-mono); }
 .sidebar-collapse-btn { display: flex; align-items: center; gap: 10px; width: 100%; margin-bottom: 10px; padding: 8px 0; background: none; border: none; color: rgba(255,255,255,0.62); font: 500 12px var(--font-body); cursor: pointer; }
@@ -168,6 +169,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 #section-iron_mountain .page-header { --section-accent: var(--m-iron); }
 #section-tareas .page-header { --section-accent: #BE123C; }
 #section-reportes .page-header { --section-accent: var(--m-reportes); }
+#section-destruccion .page-header { --section-accent: var(--danger); }
+.destruccion-sub { margin-top: 3px; color: var(--text-3); font-size: 11px; }
+.info-box.destruccion-info { background: var(--danger-bg); color: var(--text); margin-bottom: 1rem; }
 
 /* KANBAN Y CITAS */
 .task-summary { display:grid; grid-template-columns:repeat(3, minmax(130px,1fr)); gap:10px; margin-bottom:1rem; }

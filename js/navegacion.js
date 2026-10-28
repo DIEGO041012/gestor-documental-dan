@@ -55,6 +55,7 @@ function showSection(s) {
   else if(s==='envios') loadShipments();
   else if(s==='iron_mountain') { ironMountainPage = 0; loadIronMountain(); }
   else if(s==='prestamos') loadPrestamos();
+  else if(s==='destruccion') loadDestruccion();
   else if(s==='tareas') loadTasksModule();
   else if(s==='reportes') loadReportes();
 }

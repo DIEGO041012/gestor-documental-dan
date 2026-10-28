@@ -31,6 +31,12 @@ async function exportExcel(type) {
     const { data } = await sb.from('radicados').select('*').order('fecha_recibido');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet((data||[]).map((r,i)=>({'#':i+1,'Consecutivo':r.consecutivo,'Fecha de recibido':r.fecha_recibido,'Hora':r.hora_recibido,'Documento':r.documento,'Tipo':r.tipo,'Remitente':r.remitente,'Área':r.area,'Destinatario':r.destinatario,'Responsable que recibe':r.responsable_recibe,'Soporte':r.soporte}))), 'Radicados');
     XLSX.writeFile(wb, 'inventario_radicados.xlsx');
+  } else if(type==='destruccion') {
+    const {data,error}=await sb.from('destruccion_documental').select('*').order('fecha_envio');
+    if(error){toast('Error al exportar: '+error.message,'error');return;}
+    const rows=(data||[]).map((r,i)=>({'#':i+1,'Tipo':r.tipo==='caja'?'Caja':'Documento','Número caja':r.numero_caja,'Año':r.año,'Mes':r.mes?MESES[r.mes-1]:'','Área':r.area,'Ubicación de origen':r.ubicacion,'Contenido':r.contenido,'Motivo':r.motivo,'Responsable':r.responsable,'Número de acta':r.numero_acta,'Fecha de envío':r.fecha_envio,'Estado':DESTRUCCION_ESTADOS[r.estado]||r.estado,'Fecha de destrucción':r.fecha_destruccion||'','Origen':r.origen==='archivo_general'?'Documentación general':'Manual','Observaciones':r.observaciones||''}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows.length?rows:[{}]),'Destrucción documental');
+    XLSX.writeFile(wb,'historial_destruccion_documental.xlsx');
   } else if(type==='iron_mountain') {
     toast('Preparando inventario de Iron Mountain...');
     const fetchAll = async table => {

@@ -14,7 +14,9 @@ function openModal(type, record) {
     radicados: record ? 'Editar radicado' : 'Nuevo radicado',
     iron_carpetas: record ? 'Editar carpeta Iron Mountain' : 'Nueva carpeta Iron Mountain',
     iron_cajas: record ? 'Editar caja Iron Mountain' : 'Nueva caja Iron Mountain',
-    prestamo: 'Registrar préstamo'
+    prestamo: 'Registrar préstamo',
+    destruccion: record ? 'Editar registro de destrucción' : 'Nuevo registro de destrucción',
+    destruccion_envio: 'Enviar caja a destrucción'
   };
   document.getElementById('modal-title').textContent = titles[type] || type;
   const r = record || {};
@@ -133,6 +135,42 @@ function openModal(type, record) {
       <div class="form-field full"><label>Observaciones</label><textarea id="f-observaciones" style="min-height:50px"></textarea></div>
     </div>`;
   }
+  else if(type === 'destruccion') {
+    const e = v => escapeHtml(v ?? '');
+    const sel = (opts, cur) => opts.map(([v,l]) => `<option value="${v}" ${String(cur ?? '')===v?'selected':''}>${l}</option>`).join('');
+    body = `<div class="form-grid">
+      <div class="form-field"><label>Tipo *</label><select id="f-d-tipo">${sel([['caja','Caja'],['documento','Documento']], r.tipo || 'caja')}</select></div>
+      <div class="form-field"><label>Número de caja</label><input id="f-d-numero_caja" value="${e(r.numero_caja)}" placeholder="Ej: 953"></div>
+      <div class="form-field"><label>Año(s)</label><input id="f-d-año" value="${e(r.año)}" placeholder="Ej: 2018 o 2018-2022"></div>
+      <div class="form-field"><label>Mes</label><select id="f-d-mes"><option value="">Sin especificar</option>${MESES.map((m,i)=>`<option value="${i+1}" ${r.mes==i+1?'selected':''}>${m}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Área</label><input id="f-d-area" value="${e(r.area)}" placeholder="Ej: Contabilidad"></div>
+      <div class="form-field"><label>Ubicación de origen</label><input id="f-d-ubicacion" value="${e(r.ubicacion)}" placeholder="Ej: Estiba 6"></div>
+      <div class="form-field full"><label>Contenido / descripción *</label><textarea id="f-d-contenido">${e(r.contenido)}</textarea></div>
+      <div class="form-field full"><label>Motivo de destrucción</label><input id="f-d-motivo" value="${e(r.motivo)}" placeholder="Ej: Tiempo de retención cumplido (TRD)"></div>
+      <div class="form-field"><label>Responsable</label><input id="f-d-responsable" value="${e(r.responsable)}"></div>
+      <div class="form-field"><label>Número de acta</label><input id="f-d-numero_acta" value="${e(r.numero_acta)}" placeholder="Ej: ACTA-2026-001"></div>
+      <div class="form-field"><label>Fecha de envío *</label><input type="date" id="f-d-fecha_envio" value="${e(r.fecha_envio || localDateValue())}"></div>
+      <div class="form-field"><label>Estado</label><select id="f-d-estado">${sel([['pendiente','Pendiente de destrucción'],['destruido','Destruido']], r.estado || 'pendiente')}</select></div>
+      <div class="form-field"><label>Fecha de destrucción</label><input type="date" id="f-d-fecha_destruccion" value="${e(r.fecha_destruccion)}"></div>
+      <div class="form-field full"><label>Observaciones</label><textarea id="f-d-observaciones" style="min-height:55px">${e(r.observaciones)}</textarea></div>
+    </div>`;
+  } else if(type === 'destruccion_envio') {
+    destruccionCajaId = r.id;
+    editingId = null;
+    const e = v => escapeHtml(v ?? '');
+    body = `<div class="info-box destruccion-info">
+        <strong>Caja ${e(r.numero_caja || 'sin número')}</strong> · ${e(r.area || 'Sin área')} · ${e(r.año || 'Sin año')}<br>${e(r.contenido || 'Sin contenido')}
+        <div class="destruccion-sub" style="margin-top:6px">La caja saldrá de Documentación general y quedará en el historial de Destrucción documental.</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field full"><label>Motivo de destrucción</label><input id="f-d-motivo" placeholder="Ej: Tiempo de retención cumplido (TRD)"></div>
+        <div class="form-field"><label>Responsable</label><input id="f-d-responsable"></div>
+        <div class="form-field"><label>Número de acta</label><input id="f-d-numero_acta" placeholder="Ej: ACTA-2026-001"></div>
+        <div class="form-field"><label>Fecha de envío</label><input type="date" id="f-d-fecha_envio" value="${localDateValue()}"></div>
+        <div class="form-field full"><label>Observaciones</label><textarea id="f-d-observaciones" style="min-height:55px"></textarea></div>
+      </div>`;
+    document.getElementById('btn-save').innerHTML = '<i class="ti ti-file-shredder"></i> Enviar a destrucción';
+  }
   document.getElementById('modal-body').innerHTML = body;
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -186,6 +224,26 @@ async function saveRecord() {
     return;
   }
 
+  if(type === 'destruccion_envio') {
+    const btn = document.getElementById('btn-save');
+    btn.disabled = true;
+    const { error } = await sb.rpc('enviar_caja_a_destruccion', {
+      p_caja_id: destruccionCajaId,
+      p_motivo: val('f-d-motivo') || null,
+      p_responsable: val('f-d-responsable') || null,
+      p_numero_acta: val('f-d-numero_acta') || null,
+      p_fecha_envio: val('f-d-fecha_envio') || null,
+      p_observaciones: val('f-d-observaciones') || null
+    });
+    btn.disabled = false;
+    if(error) { toast('No se envió a destrucción: ' + error.message, 'error'); return; }
+    toast('Caja enviada a Destrucción documental');
+    closeModal();
+    loadGeneral();
+    loadDashboard();
+    return;
+  }
+
   let data = {};
   let table = '';
 
@@ -219,6 +277,11 @@ async function saveRecord() {
     if(!val('f-documento') || !val('f-solicitante') || !val('f-fecha_devolucion')) { toast('Completa los campos obligatorios', 'error'); return; }
     data = { archivo: val('f-archivo'), documento: val('f-documento'), solicitante: val('f-solicitante'), fecha_salida: val('f-fecha_salida'), fecha_devolucion: val('f-fecha_devolucion'), observaciones: val('f-observaciones'), estado: 'activo' };
     table = 'prestamos';
+  } else if(type === 'destruccion') {
+    if(!val('f-d-contenido') || !val('f-d-fecha_envio')) { toast('Completa el contenido y la fecha de envío', 'error'); return; }
+    const estado = val('f-d-estado');
+    data = { tipo: val('f-d-tipo'), numero_caja: val('f-d-numero_caja')||null, año: val('f-d-año')||null, mes: val('f-d-mes')?parseInt(val('f-d-mes')):null, area: val('f-d-area')||null, ubicacion: val('f-d-ubicacion')||null, contenido: val('f-d-contenido'), motivo: val('f-d-motivo')||null, responsable: val('f-d-responsable')||null, numero_acta: val('f-d-numero_acta')||null, fecha_envio: val('f-d-fecha_envio'), estado, fecha_destruccion: val('f-d-fecha_destruccion') || (estado==='destruido' ? localDateValue() : null), observaciones: val('f-d-observaciones')||null };
+    table = 'destruccion_documental';
   }
 
   let error;
@@ -238,10 +301,11 @@ async function saveRecord() {
   else if(type==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
   else if(type==='iron_carpetas'||type==='iron_cajas') loadIronMountain();
   else if(type==='prestamo') { loadPrestamos(); loadDashboard(); }
+  else if(type==='destruccion') loadDestruccion();
 }
 
 async function editRecord(type, id) {
-  const tableMap = { general:'archivo_general', bodega_primavera:'bodega_primavera', gestion_activos:'personal_activo', gestion_inactivos:'personal_inactivo', presidencia:'presidencia', radicados:'radicados', iron_carpetas:'iron_mountain_carpetas', iron_cajas:'iron_mountain_cajas' };
+  const tableMap = { general:'archivo_general', bodega_primavera:'bodega_primavera', gestion_activos:'personal_activo', gestion_inactivos:'personal_inactivo', presidencia:'presidencia', radicados:'radicados', iron_carpetas:'iron_mountain_carpetas', iron_cajas:'iron_mountain_cajas', destruccion:'destruccion_documental' };
   const { data, error } = await sb.from(tableMap[type]).select('*').eq('id', id).single();
   if(error || !data) { toast('Error al cargar el registro', 'error'); return; }
   if(type==='gestion_activos') gestionTab='activos';
@@ -267,7 +331,8 @@ async function deleteRecord(table, id, section, label) {
   else if(section==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
   else if(section==='iron_mountain') loadIronMountain();
   else if(section==='prestamos') { loadPrestamos(); loadDashboard(); }
+  else if(section==='destruccion') loadDestruccion();
 }
 
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingId=null; uploadedFotoUrl=null; bajaRecordData=null; document.getElementById('btn-save').innerHTML = '<i class="ti ti-check"></i> Guardar'; }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editingId=null; destruccionCajaId=null; uploadedFotoUrl=null; bajaRecordData=null; document.getElementById('btn-save').innerHTML = '<i class="ti ti-check"></i> Guardar'; }
 function closeModalOutside(e) { if(e.target===document.getElementById('modal-overlay')) closeModal(); }

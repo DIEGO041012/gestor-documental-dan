@@ -22,6 +22,7 @@ async function loadGeneral() {
     <td>${rowActions([
       {label:'Editar', icon:'edit', onclick:`editRecord('general','${r.id}')`},
       {label:'Trasladar', icon:'truck-delivery', onclick:`openGeneralTransfer('${r.id}')`},
+      {label:'Enviar a destrucción', icon:'file-shredder', onclick:`openDestruccionFromGeneral('${r.id}')`},
       {separator:true},
       {label:'Eliminar', icon:'trash', danger:true, onclick:`deleteRecord('archivo_general','${r.id}','general',${jsArg('Caja '+(r.numero_caja||'sin número'))})`}
     ])}</td>

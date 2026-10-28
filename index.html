@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=2.3">
+<link rel="stylesheet" href="css/styles.css?v=2.4">
 </head>
 <body>
 
@@ -60,6 +60,7 @@
       <a class="nav-item" data-mod="iron_mountain" onclick="showSection('iron_mountain')" title="Registros Iron Mountain"><i class="ti ti-building-warehouse"></i><span class="nav-label">Registros Iron Mountain</span></a>
       <div class="nav-section">Gestión</div>
       <a class="nav-item" data-mod="prestamos" onclick="showSection('prestamos')" title="Préstamos"><i class="ti ti-arrows-left-right"></i><span class="nav-label">Préstamos</span></a>
+      <a class="nav-item" data-mod="destruccion" onclick="showSection('destruccion')" title="Destrucción documental"><i class="ti ti-file-shredder"></i><span class="nav-label">Destrucción documental</span></a>
       <a class="nav-item" data-mod="tareas" onclick="showSection('tareas')" title="Tareas y citas"><i class="ti ti-layout-kanban"></i><span class="nav-label">Tareas y citas</span></a>
       <a class="nav-item" data-mod="reportes" onclick="showSection('reportes')" title="Reportes"><i class="ti ti-chart-bar"></i><span class="nav-label">Reportes</span></a>
     </nav>
@@ -67,7 +68,7 @@
       <button class="sidebar-collapse-btn" type="button" id="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" aria-label="Contraer menú" title="Contraer menú"><i class="ti ti-layout-sidebar-left-collapse"></i><span class="nav-label">Contraer menú</span></button>
       <div id="auth-user-email" class="sidebar-footer-meta"></div>
       <button class="btn btn-secondary btn-sm auth-logout" type="button" onclick="signOut()" title="Cerrar sesión"><i class="ti ti-logout"></i><span class="nav-label">Cerrar sesión</span></button>
-      <div class="sidebar-footer-meta">v2.3 · Supabase + Cloudinary</div>
+      <div class="sidebar-footer-meta">v2.4 · Supabase + Cloudinary</div>
     </div>
   </aside>
 
@@ -329,6 +330,30 @@
       <div id="loans-list"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></div>
     </div>
 
+    <!-- DESTRUCCIÓN DOCUMENTAL -->
+    <div id="section-destruccion" class="section">
+      <div class="page-header">
+        <h1>Destrucción documental</h1>
+        <p>Historial de cajas y documentos enviados a destrucción, desde Documentación general o ingresados manualmente</p>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="exportExcel('destruccion')"><i class="ti ti-download"></i> Exportar Excel</button>
+          <button class="btn btn-primary" onclick="openModal('destruccion')"><i class="ti ti-plus"></i> Agregar registro</button>
+        </div>
+      </div>
+      <div class="task-summary" id="destruccion-summary"></div>
+      <div class="card">
+        <div class="search-row">
+          <div class="search-wrap"><i class="ti ti-search"></i><input type="text" id="search-destruccion" placeholder="Buscar por caja, área, contenido, motivo o acta..." oninput="debounceSearch('destruccion', loadDestruccion)"></div>
+          <select class="filter" id="filter-destruccion-estado" onchange="loadDestruccion()"><option value="">Todos los estados</option><option value="pendiente">Pendiente de destrucción</option><option value="destruido">Destruido</option></select>
+          <select class="filter" id="filter-destruccion-tipo" onchange="loadDestruccion()"><option value="">Cajas y documentos</option><option value="caja">Solo cajas</option><option value="documento">Solo documentos</option></select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>#</th><th>Tipo</th><th>Caja</th><th>Año(s)</th><th>Área</th><th>Contenido</th><th>Motivo</th><th>Envío</th><th>Estado</th><th>Origen</th><th>Acciones</th></tr></thead>
+          <tbody id="table-destruccion"><tr><td colspan="11"><div class="loading"><i class="ti ti-loader"></i> Cargando...</div></td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
     <!-- TAREAS Y CITAS -->
     <div id="section-tareas" class="section">
       <div class="page-header">
@@ -563,29 +588,30 @@
 <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
 
 <!-- ═══ SCRIPTS: el orden importa (config y utils van primero) ═══ -->
-<script src="js/config.js?v=2.3"></script>
-<script src="js/utils.js?v=2.3"></script>
-<script src="js/ui.js?v=2.3"></script>
-<script src="js/auth.js?v=2.3"></script>
-<script src="js/navegacion.js?v=2.3"></script>
-<script src="js/dashboard.js?v=2.3"></script>
-<script src="js/general.js?v=2.3"></script>
-<script src="js/bodega_primavera.js?v=2.3"></script>
-<script src="js/gestion.js?v=2.3"></script>
-<script src="js/presidencia.js?v=2.3"></script>
-<script src="js/radicados.js?v=2.3"></script>
-<script src="js/envios.js?v=2.3"></script>
-<script src="js/prestamos.js?v=2.3"></script>
-<script src="js/tareas.js?v=2.3"></script>
-<script src="js/reportes.js?v=2.3"></script>
-<script src="js/modal.js?v=2.3"></script>
-<script src="js/importar.js?v=2.3"></script>
-<script src="js/importar_presidencia.js?v=2.3"></script>
-<script src="js/importar_radicados.js?v=2.3"></script>
-<script src="js/iron_mountain.js?v=2.3"></script>
-<script src="js/importar_iron_mountain.js?v=2.3"></script>
-<script src="js/exportar.js?v=2.3"></script>
-<script src="js/recepcion_contabilidad.js?v=2.3"></script>
-<script src="js/init.js?v=2.3"></script>
+<script src="js/config.js?v=2.4"></script>
+<script src="js/utils.js?v=2.4"></script>
+<script src="js/ui.js?v=2.4"></script>
+<script src="js/auth.js?v=2.4"></script>
+<script src="js/navegacion.js?v=2.4"></script>
+<script src="js/dashboard.js?v=2.4"></script>
+<script src="js/general.js?v=2.4"></script>
+<script src="js/bodega_primavera.js?v=2.4"></script>
+<script src="js/gestion.js?v=2.4"></script>
+<script src="js/presidencia.js?v=2.4"></script>
+<script src="js/radicados.js?v=2.4"></script>
+<script src="js/envios.js?v=2.4"></script>
+<script src="js/prestamos.js?v=2.4"></script>
+<script src="js/destruccion.js?v=2.4"></script>
+<script src="js/tareas.js?v=2.4"></script>
+<script src="js/reportes.js?v=2.4"></script>
+<script src="js/modal.js?v=2.4"></script>
+<script src="js/importar.js?v=2.4"></script>
+<script src="js/importar_presidencia.js?v=2.4"></script>
+<script src="js/importar_radicados.js?v=2.4"></script>
+<script src="js/iron_mountain.js?v=2.4"></script>
+<script src="js/importar_iron_mountain.js?v=2.4"></script>
+<script src="js/exportar.js?v=2.4"></script>
+<script src="js/recepcion_contabilidad.js?v=2.4"></script>
+<script src="js/init.js?v=2.4"></script>
 </body>
 </html>
