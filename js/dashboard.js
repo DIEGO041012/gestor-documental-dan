@@ -16,14 +16,13 @@ async function loadDashboard() {
   document.getElementById('s-radicados').textContent = (rad.count ?? 0).toLocaleString('es-CO');
 
   const { data: loans } = await sb.from('prestamos').select('*').eq('estado','activo').order('fecha_devolucion');
-  const hoy = new Date();
   const el = document.getElementById('dashboard-loans');
   if(!loans || loans.length === 0) {
     el.innerHTML = '<p style="color:var(--text-3);font-size:13px">No hay préstamos activos.</p>';
     return;
   }
   el.innerHTML = loans.map(p => {
-    const venc = new Date(p.fecha_devolucion) < hoy;
+    const venc = loanIsOverdue(p.fecha_devolucion);
     return `<div class="loan-card ${venc?'overdue':''}">
       <div><div class="loan-title">${escapeHtml(p.documento)}</div><div class="loan-meta">Solicitante: <strong>${escapeHtml(p.solicitante)}</strong> · ${escapeHtml(p.archivo)} · Dev. esperada: <span class="mono">${escapeHtml(p.fecha_devolucion)}</span></div></div>
       <span class="badge ${venc?'badge-danger':'badge-warn'}">${venc?'Vencido':'Activo'}</span>

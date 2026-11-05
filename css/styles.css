@@ -170,6 +170,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 #section-tareas .page-header { --section-accent: #BE123C; }
 #section-reportes .page-header { --section-accent: var(--m-reportes); }
 #section-destruccion .page-header { --section-accent: var(--danger); }
+/* AVISO DE PRESTADO Y SELECTOR DE REGISTRO */
+.loan-notice { margin-top: 5px; }
+.loan-notice-icon { font-size: 12px; margin-right: 4px; }
+.loan-notice-sub { margin-top: 4px; color: var(--text-2); font-size: 11px; white-space: nowrap; }
+.loan-notice-sub .mono { font-size: 11px; }
+.loan-picker-results:not(:empty) { margin-top: 6px; max-height: 190px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+.loan-picker-item { display: block; width: 100%; padding: 8px 10px; background: var(--surface); border: none; border-bottom: 1px solid var(--border); color: var(--text); font: 500 12.5px var(--font-body); text-align: left; cursor: pointer; }
+.loan-picker-item:last-child { border-bottom: none; }
+.loan-picker-item:hover:not(:disabled) { background: var(--accent-bg); }
+.loan-picker-item:disabled { color: var(--text-3); cursor: not-allowed; }
+.loan-picker-busy { display: block; margin-top: 2px; color: var(--warning); font-size: 11px; }
+.loan-picker-empty { padding: 8px 10px; color: var(--text-2); font-size: 12px; }
+.loan-picker-selected { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--accent-bg); border-radius: var(--radius); color: var(--text); font-size: 12.5px; font-weight: 500; }
+.loan-picker-selected > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.loan-picker-selected > i { color: var(--accent); font-size: 16px; }
 .destruccion-sub { margin-top: 3px; color: var(--text-3); font-size: 11px; }
 .info-box.destruccion-info { background: var(--danger-bg); color: var(--text); margin-bottom: 1rem; }
 

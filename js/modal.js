@@ -25,7 +25,7 @@ function openModal(type, record) {
   const mesOptsOpcional = '<option value="">Sin especificar</option>' + mesOpts;
   const diaOpts = Array.from({length:31},(_,i)=>`<option value="${i+1}" ${r.dia==i+1?'selected':''}>${i+1}</option>`).join('');
   const estadoOpts = '<option value="">Sin especificar</option>' + ['Disponible','Prestado','En revisión'].map(s=>`<option value="${s}" ${r.estado===s?'selected':''}>${s}</option>`).join('');
-  const archOpts = ['Archivo general','Gestión humana — Activos','Gestión humana — Inactivos','Presidencia'].map(a=>`<option>${a}</option>`).join('');
+  const archOpts = Object.keys(PRESTAMO_FUENTES).map(a=>`<option>${a}</option>`).join('');
 
   const fotoBlock = (tipo) => `
     <div class="form-field full">
@@ -127,7 +127,13 @@ function openModal(type, record) {
     </div>`;
   } else if(type === 'prestamo') {
     body = `<div class="form-grid">
-      <div class="form-field full"><label>Archivo</label><select id="f-archivo">${archOpts}</select></div>
+      <div class="form-field full"><label>Archivo</label><select id="f-archivo" onchange="resetPrestamoRegistro()">${archOpts}</select></div>
+      <div class="form-field full">
+        <label for="f-registro-buscar">Registro que se presta</label>
+        <div class="loan-picker-selected" id="f-registro-seleccion" hidden><i class="ti ti-link"></i><span id="f-registro-seleccion-texto"></span><button type="button" class="btn btn-secondary btn-sm" onclick="resetPrestamoRegistro()">Cambiar</button></div>
+        <input id="f-registro-buscar" autocomplete="off" placeholder="Buscar por caja, área, nombre, cédula o tema..." oninput="debounceSearch('prestamo-registro', buscarRegistroPrestamo)">
+        <div class="loan-picker-results" id="f-registro-resultados"></div>
+      </div>
       <div class="form-field full"><label>Documento solicitado</label><input id="f-documento" placeholder="Ej: Caja 2024 - Enero - Contabilidad"></div>
       <div class="form-field full"><label>Nombre del solicitante</label><input id="f-solicitante"></div>
       <div class="form-field"><label>Fecha de salida</label><input type="date" id="f-fecha_salida" value="${new Date().toISOString().slice(0,10)}"></div>
@@ -172,6 +178,7 @@ function openModal(type, record) {
     document.getElementById('btn-save').innerHTML = '<i class="ti ti-file-shredder"></i> Enviar a destrucción';
   }
   document.getElementById('modal-body').innerHTML = body;
+  if(type === 'prestamo') prestamoRegistro = null;
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -275,7 +282,13 @@ async function saveRecord() {
     table = 'iron_mountain_cajas';
   } else if(type === 'prestamo') {
     if(!val('f-documento') || !val('f-solicitante') || !val('f-fecha_devolucion')) { toast('Completa los campos obligatorios', 'error'); return; }
+    if(!prestamoRegistro && !await confirmDialog({
+      title: '¿Guardar sin vincular un registro?',
+      description: 'No seleccionaste la caja, persona o documento que se presta, así que ningún registro mostrará el aviso de "Prestado".',
+      confirmLabel: 'Guardar sin vincular'
+    })) return;
     data = { archivo: val('f-archivo'), documento: val('f-documento'), solicitante: val('f-solicitante'), fecha_salida: val('f-fecha_salida'), fecha_devolucion: val('f-fecha_devolucion'), observaciones: val('f-observaciones'), estado: 'activo' };
+    if(prestamoRegistro) { data.registro_tabla = prestamoRegistro.tabla; data.registro_id = prestamoRegistro.id; }
     table = 'prestamos';
   } else if(type === 'destruccion') {
     if(!val('f-d-contenido') || !val('f-d-fecha_envio')) { toast('Completa el contenido y la fecha de envío', 'error'); return; }
@@ -291,7 +304,10 @@ async function saveRecord() {
     ({ error } = await sb.from(table).insert([data]));
   }
 
-  if(error) { toast('Error al guardar: ' + error.message, 'error'); return; }
+  if(error) {
+    toast(type==='prestamo' && error.code==='23505' ? 'Ese registro ya tiene un préstamo activo' : 'Error al guardar: ' + error.message, 'error');
+    return;
+  }
   toast(editingId ? 'Registro actualizado' : 'Registro guardado');
   closeModal();
   if(type==='general') loadGeneral();
@@ -300,7 +316,7 @@ async function saveRecord() {
   else if(type==='presidencia') loadPresidencia();
   else if(type==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
   else if(type==='iron_carpetas'||type==='iron_cajas') loadIronMountain();
-  else if(type==='prestamo') { loadPrestamos(); loadDashboard(); }
+  else if(type==='prestamo') refreshLoanViews();
   else if(type==='destruccion') loadDestruccion();
 }
 
@@ -330,7 +346,7 @@ async function deleteRecord(table, id, section, label) {
   else if(section==='presidencia') loadPresidencia();
   else if(section==='radicados') { loadRadicados(); populateRadicadosFilters(); loadDashboard(); }
   else if(section==='iron_mountain') loadIronMountain();
-  else if(section==='prestamos') { loadPrestamos(); loadDashboard(); }
+  else if(section==='prestamos') refreshLoanViews();
   else if(section==='destruccion') loadDestruccion();
 }
 

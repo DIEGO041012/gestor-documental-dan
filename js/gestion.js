@@ -11,7 +11,7 @@ async function loadGestion() {
   const table = gestionTab === 'activos' ? 'personal_activo' : 'personal_inactivo';
   let query = sb.from(table).select('*').order('nombre');
   if(q) query = query.or(`nombre.ilike.%${q}%,cedula.ilike.%${q}%`);
-  const { data, error } = await query;
+  const [{ data, error }, loans] = await Promise.all([query, loadActiveLoans(table)]);
   const wrap = document.getElementById('table-gestion-wrap');
   if(error || !data || data.length === 0) {
     wrap.innerHTML = `<div class="empty"><i class="ti ti-users"></i><p>Sin registros.</p></div>`;
@@ -21,15 +21,19 @@ async function loadGestion() {
     ? `<tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Año</th><th>Mes</th><th>Día</th><th>Acciones</th></tr>`
     : `<tr><th>#</th><th>Foto</th><th>Nombre completo</th><th>Cédula</th><th>Fecha inicio</th><th>Fecha final</th><th>Ubicación</th><th>Acciones</th></tr>`;
   const tbody = data.map((r,i) => {
-    const nombre = escapeHtml(r.nombre);
+    const loan = loans.get(String(r.id));
+    const nombre = escapeHtml(r.nombre) + (loan ? `<div class="loan-notice">${loanNotice(loan)}</div>` : '');
     const foto = r.foto_url ? `<img src="${escapeHtml(r.foto_url)}" class="foto-preview" style="width:30px;height:30px" alt="">` : `<div class="avatar">${escapeHtml((r.nombre||'?').charAt(0))}</div>`;
     const dbTable = gestionTab === 'activos' ? 'personal_activo' : 'personal_inactivo';
     const editType = gestionTab === 'activos' ? 'gestion_activos' : 'gestion_inactivos';
     const actions = rowActions([
       {label:'Editar', icon:'edit', onclick:`editRecord('${editType}','${r.id}')`},
-      ...(gestionTab === 'activos' ? [{label:'Dar de baja', icon:'user-x', onclick:`openBajaModal('${r.id}')`}] : []),
-      {separator:true},
-      {label:'Eliminar', icon:'trash', danger:true, onclick:`deleteRecord('${dbTable}','${r.id}','gestion',${jsArg(r.nombre)})`}
+      ...loanMenuItems(gestionTab === 'activos' ? 'Gestión humana — Activos' : 'Gestión humana — Inactivos', r.id, loan),
+      ...(loan ? [] : [
+        ...(gestionTab === 'activos' ? [{label:'Dar de baja', icon:'user-x', onclick:`openBajaModal('${r.id}')`}] : []),
+        {separator:true},
+        {label:'Eliminar', icon:'trash', danger:true, onclick:`deleteRecord('${dbTable}','${r.id}','gestion',${jsArg(r.nombre)})`}
+      ])
     ]);
     if(gestionTab === 'activos') {
       return `<tr><td>${i+1}</td><td>${foto}</td><td>${nombre}</td><td><span class="mono">${escapeHtml(r.cedula)}</span></td><td><span class="mono">${escapeHtml(r.año)}</span></td><td>${MESES[r.mes-1]||escapeHtml(r.mes)}</td><td><span class="mono">${escapeHtml(r.dia)}</span></td><td>${actions}</td></tr>`;

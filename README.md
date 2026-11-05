@@ -17,6 +17,10 @@ Si el inicio de sesión rechaza las credenciales, comprueba que el usuario apare
 
 Ejecuta `supabase/migrations/202610280001_destruccion_documental.sql` en el SQL Editor. Crea la tabla del historial de destrucción y la función `enviar_caja_a_destruccion`, que mueve una caja de Documentación general al historial en una sola transacción: si algo falla, la caja no se elimina.
 
+## Aviso de prestado
+
+Ejecuta `supabase/migrations/202611050001_prestamos_registro.sql` en el SQL Editor. Vincula cada préstamo con el registro prestado, impide dos préstamos activos sobre el mismo registro y mantiene el estado de las cajas al prestar y devolver.
+
 ## API de Coordinadora
 
 La aplicación no llama a Coordinadora directamente ni guarda credenciales del transportador en el navegador. Para habilitar la creación de guías y el rastreo automático se requiere la documentación oficial del servicio contratado (autenticación, ambientes y operaciones disponibles). La integración debe ejecutarse en una función de servidor —por ejemplo, Supabase Edge Function— con las credenciales almacenadas como secretos del servidor.
