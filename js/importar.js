@@ -120,6 +120,17 @@ function showImportPreview(rows) {
   document.getElementById('btn-import-confirm').style.display = (valid.length>0 && missing.length===0 && invalidStartRows.length===0) ? 'inline-flex' : 'none';
 }
 
+function parseImportMonth(value) {
+  const monthNumber = parseInt(value);
+  if(!Number.isNaN(monthNumber)) return Math.min(Math.max(monthNumber, 1), 12);
+  const monthName = String(value ?? '').trim().toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  const monthIndex = MESES.findIndex(month => month.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') === monthName);
+  return monthIndex >= 0 ? monthIndex + 1 : 1;
+}
 
 async function confirmImport() {
   const table = importTab==='activos' ? 'personal_activo' : 'personal_inactivo';
@@ -127,7 +138,7 @@ async function confirmImport() {
     const nombre = String(r['Nombre completo']).trim();
     const cedula = String(r['Cédula']||'').trim();
     if(importTab==='activos') {
-      return { nombre, cedula, año: parseInt(getField(r, 'Año','ano'))||new Date().getFullYear(), mes: Math.min(Math.max(parseInt(getField(r, 'Mes','mes'))||1,1),12), dia: parseInt(getField(r, 'Día','Dia','dia'))||1 };
+      return { nombre, cedula, año: parseInt(getField(r, 'Año','ano'))||new Date().getFullYear(), mes: parseImportMonth(getField(r, 'Mes','mes')), dia: parseInt(getField(r, 'Día','Dia','dia'))||1 };
     } else {
       return {
         nombre,
@@ -138,7 +149,9 @@ async function confirmImport() {
       };
     }
   });
-  const invalidStart = records.map((r,i) => ({r,i})).filter(x => !x.r.fecha_inicio);
+  const invalidStart = importTab==='inactivos'
+    ? records.map((r,i) => ({r,i})).filter(x => !x.r.fecha_inicio)
+    : [];
   if(invalidStart.length > 0) {
     const rowIndexes = invalidStart.map(x => x.i + 1).join(', ');
     toast(`${invalidStart.length} registro(s) sin fecha de inicio válida (filas: ${rowIndexes}), revisa el archivo`, 'error');
